@@ -182,29 +182,39 @@ server <- function(input, output) {
     })
 
     # -- table
-    df1 <- reactive({
-        if (input$r == TRUE){
-            makeColumn("Korelasi X dan Y", cor(data()$x, data()$y))
-        } else {
-            data.frame("")
+    df <- reactive({
+        tab <- makeColumn("Ukuran Data", nrow(data()))
+        if(input$r == TRUE){
+            tab <- cbind(tab, makeColumn("Korelasi X dan Y", cor(data()$x, data()$y)))
         }
-    })
-    df2 <- reactive({
-        if (input$r2 == TRUE){
-            makeColumn("Kuadrat Korelasi X dan Y", (cor(data()$x, data()$y))^2)
-        } else {
-            data.frame("")
+        if(input$r2 == TRUE){
+            tab <- cbind(tab, makeColumn("Kuadrat Korelasi X dan Y", (cor(data()$x, data()$y))^2))
         }
-    })
-    df3 <- reactive({
-        if (input$std == TRUE){
-            makeColumn("Simpangan Baku Galat", sd(data()$y - predict(lm(data()$y ~ data()$x))))
-        } else {
-            data.frame("")
+        if(input$std == TRUE){
+            tab <- cbind(tab, makeColumn("Simpangan Baku Galat", sd(data()$y - predict(lm(data()$y ~ data()$x)))))
         }
+        tab
     })
+    # df1 <- reactive({
+    #     if (input$r == TRUE){
+    #         df <- cbind(df, makeColumn("Korelasi X dan Y", cor(data()$x, data()$y)))
+    #         df
+    #     }
+    # })
+    # df2 <- reactive({
+    #     if (input$r2 == TRUE){
+    #         df <- cbind(df, makeColumn("Kuadrat Korelasi X dan Y", (cor(data()$x, data()$y))^2))
+    #         df
+    #     } 
+    # })
+    # df3 <- reactive({
+    #     if (input$std == TRUE){
+    #         df <- cbind(df, makeColumn("Simpangan Baku Galat", sd(data()$y - predict(lm(data()$y ~ data()$x)))))
+    #         df
+    #     }
+    # })
 
-    output$table <- renderTable(cbind(df1(), df2(), df3()))
+    output$table <- renderTable(df())
 
 }
 
