@@ -45,14 +45,9 @@ ui <- shinyUI(
             checkboxInput(inputId = "res", label = "Visualisasi Galat"),
             checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
             checkboxInput(inputId = "zsc", label = "Standardisasi Peubah"),
-            checkboxInput(inputId = "sbx", label = "Atur Batas Sumbu X"),
             conditionalPanel(
-                condition = "input.sbx == true",
-                sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10))
-            ),
-            checkboxInput(inputId = "sby", label = "Atur Batas Sumbu Y"),
-            conditionalPanel(
-                condition = "input.sby == true",
+                condition = "input.data == 'Input Mandiri'",
+                sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
                 sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10))
             ),
             actionButton(inputId = "show_sum", "Show Summary")
@@ -64,7 +59,9 @@ ui <- shinyUI(
                 tabPanel(
                     #plot
                     title = "Plot",
-                    plotlyOutput(outputId = "plot", width = "100%", height = "100%")
+                    plotlyOutput(outputId = "plot", width = "100%", height = "100%"),
+                    #tabel
+                    tableOutput(outputId = "table")
                 ),
                 tabPanel(
                     # information
@@ -133,6 +130,14 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
     return(plotly_output)
 }
 
+#### Append Dataframe Column
+
+makeColumn <- function(col, val) {
+    df <- data.frame(val)
+    names(df) <- col
+    return(df)
+}
+
 
 ## ------------------------------------- SERVER -------------------------------------
 
@@ -146,17 +151,53 @@ server <- function(input, output) {
         } else if (input$data == "Dataset Linier" || input$data == "Dataset Kuadratik") {
             generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope)
         } else {
-            generateRandomData(n = 100, s = 25, type = input$data, slope = rnorm(1, mean = 0, sd = 5))
+            click <- event_data("plotly_click", source = "inputPlot")
+            data.frame(x = click$x, y = click$y)
         }
     })
 
+    # -- plot
     output$plot <- renderPlotly({
-        createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res)
+        if(input$data != "Input Mandiri"){
+            if(input$zsc == TRUE) {
+                x <- scale(data()$x)
+                y <- scale(data()$y)
+                data2 <- data.frame(x=x, y=y)
+                createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res)
+            } else {
+                createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res)
+            }
+        } else {
+            p <- ggplot() + xlim(input$slider.x[1], input$slider.x[2]) + ylim(input$slider.y[1], input$slider.y[2])
+            ggplotly(p, source = "inputPlot")
+        }
     })
-    
-    output$selected <- renderText({
-        input$checkbox
+
+    # -- table
+    df1 <- reactive({
+        if (input$r == TRUE){
+            makeColumn("Korelasi X dan Y", cor(data()$x, data()$y))
+        } else {
+            data.frame("")
+        }
     })
+    df2 <- reactive({
+        if (input$r2 == TRUE){
+            makeColumn("Kuadrat Korelasi X dan Y", (cor(data()$x, data()$y))^2)
+        } else {
+            data.frame("")
+        }
+    })
+    df3 <- reactive({
+        if (input$std == TRUE){
+            makeColumn("Simpangan Baku Galat", sd(data()$y - predict(lm(data()$y ~ data()$x))))
+        } else {
+            data.frame("")
+        }
+    })
+
+    output$table <- renderTable(cbind(df1(), df2(), df3()))
+
 }
 
 shinyApp(ui, server)
