@@ -42,8 +42,8 @@ ui <- shinyUI(
             ),
             checkboxInput(inputId = "r", label = "Koefisien Korelasi (r)"),
             checkboxInput(inputId = "r2", label = "Kuadrat Koefisien Korelasi (r²)"),
-            checkboxInput(inputId = "res", label = "Visualisasi Galat"),
             checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
+            checkboxInput(inputId = "res", label = "Visualisasi Galat"),
             checkboxInput(inputId = "zsc", label = "Standardisasi Peubah"),
             conditionalPanel(
                 condition = "input.data == 'Input Mandiri'",
@@ -145,18 +145,22 @@ server <- function(input, output) {
     ## -- data
     data <- reactive({
         req(input$data)
+
+        # refresh
+        input$refresh
+
         if(input$data == "Bilangan Acak") {
-            generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5))
+            isolate(generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5)))
         } else if (input$data == "Dataset Linier" || input$data == "Dataset Kuadratik") {
-            generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope)
+            isolate(generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope))
         } else {
             d <- event_data("plotly_click", source = "plot_click")
             df <- data.frame(x = numeric(), y = numeric())
             if(is.null(d)) {
-                df
+                isolate(df)
             } else {
                 df <- rbind(df, data.frame(x = d$x, y = d$y))
-                df
+                isolate(df)
             }
         }
     })
