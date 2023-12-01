@@ -125,9 +125,8 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
         }
 
     ## -- konversi ke plotly
-    plotly_output <- ggplotly(p)
 
-    return(plotly_output)
+    return(p)
 }
 
 #### Append Dataframe Column
@@ -151,8 +150,14 @@ server <- function(input, output) {
         } else if (input$data == "Dataset Linier" || input$data == "Dataset Kuadratik") {
             generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope)
         } else {
-            click <- event_data("plotly_click", source = "inputPlot")
-            data.frame(x = click$x, y = click$y)
+            d <- event_data("plotly_click", source = "plot_click")
+            df <- data.frame(x = numeric(), y = numeric())
+            if(is.null(d)) {
+                df
+            } else {
+                df <- rbind(df, data.frame(x = d$x, y = d$y))
+                df
+            }
         }
     })
 
@@ -163,13 +168,12 @@ server <- function(input, output) {
                 x <- scale(data()$x)
                 y <- scale(data()$y)
                 data2 <- data.frame(x=x, y=y)
-                createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res)
+                ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
             } else {
-                createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res)
+                ggplotly(createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
             }
         } else {
-            p <- ggplot() + xlim(input$slider.x[1], input$slider.x[2]) + ylim(input$slider.y[1], input$slider.y[2])
-            ggplotly(p, source = "inputPlot")
+            ggplotly(ggplot(data(), aes(x = x, y = y)) + geom_point() + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2])), source = "plot_click")
         }
     })
 
