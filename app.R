@@ -12,26 +12,34 @@ ui <- shinyUI(
         # sidebar
         sidebarPanel(
             # sidebar
-            selectInput(inputId = "data", "Pilih data", choices = c("Input Mandiri", "Bilangan Acak", "Dataset Linier", "Dataset Kuadratik")),
+            selectInput(inputId = "data", "Pilih data", choices = c("Input Mandiri", "Dataset Acak", "Dataset Bangkitan Linier", "Dataset Bangkitan Kuadratik", "Dataset Kasus R")),
             # ----- Input Mandiri
             conditionalPanel(
                 condition = "input.data == 'Input Mandiri'",
                 textOutput(outputId = "caption")
             ),
-            # ----- Bilangan Acak, Dataset Linier, Dataset Kuadratik
+            # ----- Dataset Acak, Dataset Bangkitan Linier, Dataset Bangkitan Kuadratik
             conditionalPanel(
-                condition = "input.data == 'Bilangan Acak' || input.data == 'Dataset Linier' || input.data == 'Dataset Kuadratik'",
+                condition = "input.data == 'Dataset Acak' || input.data == 'Dataset Bangkitan Linier' || input.data == 'Dataset Bangkitan Kuadratik'",
                 sliderInput(inputId = "slider.n", label = "Pilih ukuran data", min = 10, max = 300, value = 100)
             ),
             # ----- Data Linier, Kuadratik
             conditionalPanel(
-                condition = "input.data == 'Dataset Linier' || input.data == 'Dataset Kuadratik'",
+                condition = "input.data == 'Dataset Bangkitan Linier' || input.data == 'Dataset Bangkitan Kuadratik'",
                 sliderInput(inputId = "slope", label = "Tentukan Kemiringan/Slope", min = -5, max = 5, value = 0, step = 0.05),
                 radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar")),
             ),
+            # ----- Dataset dari R
+            conditionalPanel(
+                condition = "input.data == 'Dataset Kasus R'",
+                selectInput(inputId = "kasus.R", "Pilih Kasus", choices = c("cars", "mtcars", "women", "trees"))
+            ),
 
             # ----- Refresh Button
-            actionButton("refresh", "Refresh"),
+            conditionalPanel(
+                condition = "input.data != 'Dataset Kasus R'",
+                actionButton("refresh", "Refresh")
+            ),
             # ----- Pilihan-pilihan
             h3(""),
             checkboxInput(inputId = "reg", label = "Garis Regresi Linier"),
@@ -88,9 +96,9 @@ generateRandomData <- function(n, type, s, slope) {
             sd = 5
         }
     x <- runif(n, 0, 10)
-    if(type == "Dataset Linier") {
+    if(type == "Dataset Bangkitan Linier") {
         y <- slope * x + rnorm(n, 0, sd)
-    } else if (type == "Dataset Kuadratik") {
+    } else if (type == "Dataset Bangkitan Kuadratik") {
         y <- slope * x^2 + rnorm(n, 0, sd)
     } else {
         y <- runif(1, -5, 5) * x + runif(n, 0, 10)
@@ -143,16 +151,28 @@ makeColumn <- function(col, val) {
 server <- function(input, output) {
 
     ## -- data
+    get.data <- reactive({
+        switch(input$kasus.R,
+           "cars" = data.frame(x = cars$speed, y = cars$dist),
+           "women" = data.frame(x = women$height, y = women$weight),
+           "mtcars" = data.frame(x = mtcars$hp, y = mtcars$mpg),
+           "trees" = data.frame(x = trees$Height, y = trees$Girth))
+    })
+
     data <- reactive({
         req(input$data)
 
         # refresh
         input$refresh
 
-        if(input$data == "Bilangan Acak") {
+        if(input$data == "Dataset Acak") {
             isolate(generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5)))
-        } else if (input$data == "Dataset Linier" || input$data == "Dataset Kuadratik") {
+        } else if (input$data == "Dataset Bangkitan Linier" || input$data == "Dataset Bangkitan Kuadratik") {
             isolate(generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope))
+        } else if (input$data == "Dataset Kasus R"){
+            ### -----
+            get.data()
+            ### ---
         } else {
             d <- event_data("plotly_click", source = "plot_click")
             df <- data.frame(x = numeric(), y = numeric())
@@ -195,24 +215,6 @@ server <- function(input, output) {
         }
         tab
     })
-    # df1 <- reactive({
-    #     if (input$r == TRUE){
-    #         df <- cbind(df, makeColumn("Korelasi X dan Y", cor(data()$x, data()$y)))
-    #         df
-    #     }
-    # })
-    # df2 <- reactive({
-    #     if (input$r2 == TRUE){
-    #         df <- cbind(df, makeColumn("Kuadrat Korelasi X dan Y", (cor(data()$x, data()$y))^2))
-    #         df
-    #     } 
-    # })
-    # df3 <- reactive({
-    #     if (input$std == TRUE){
-    #         df <- cbind(df, makeColumn("Simpangan Baku Galat", sd(data()$y - predict(lm(data()$y ~ data()$x)))))
-    #         df
-    #     }
-    # })
 
     output$table <- renderTable(df())
 
