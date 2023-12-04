@@ -16,3 +16,23 @@ get.data <- switch("rock",
            "mtcars" = mtcars,
            "diamonds" = diamonds)
 get.data      
+
+model.reg <- lm(mpg ~ hp, mtcars)
+res <- residuals(model.reg)
+stdres <- studres(model.reg)
+pred <- predict(model.reg, mtcars)
+
+
+        if (input$type.res == "Raw"){
+            y <- res
+        } else {
+            y <- stdres
+        }
+
+        if (input$plot.res == "Galat vs X") {
+            x <- data()$x
+        } else {
+            x <- pred
+        }
+
+        data.frame(x = x, y = y)

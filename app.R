@@ -3,6 +3,7 @@ library(ggplot2)
 library(plotly)
 library(gridlayout)
 library(bslib)
+library(MASS)
 
 ## --------------------------------------- UI ---------------------------------------
 ui <- shinyUI(
@@ -58,7 +59,25 @@ ui <- shinyUI(
                 sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
                 sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10))
             ),
-            actionButton(inputId = "show_sum", "Show Summary")
+            actionButton(inputId = "show_sum", "Tampilkan Ringkasan"),
+            h5(""),
+            actionButton(inputId = "show_res", "Tampilkan Galat"),
+            conditionalPanel(
+                condition = "(input.show_res % 2) == 1",
+                radioButtons(inputId = "type.res", "Jenis Galat", choices = c("Raw", "Studentized")),
+                radioButtons(inputId = "plot.res", "Jenis Plot", choices = c("Galat vs X", "Galat vs Y duga")),
+                checkboxInput(inputId = "smtres", "Garis Pemulusan"),
+                conditionalPanel(
+                    condition = "input.smtres == true",
+                    sliderInput(inputId = "res_smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
+                ),
+                checkboxInput(inputId = "histres", "Histogram Galat"),
+                conditionalPanel(
+                    condition = "input.histres == true",
+                    sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 20, step = 0.1, value = 5),
+                    checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
+                )
+            )
         ),
         # main
         mainPanel(
@@ -66,15 +85,23 @@ ui <- shinyUI(
                 #tab 1
                 tabPanel(
                     #plot
-                    title = "Plot",
+                    title = "Data",
                     plotlyOutput(outputId = "plot", width = "100%", height = "100%"),
                     #tabel
-                    tableOutput(outputId = "table")
+                    tableOutput(outputId = "table"),
+                    conditionalPanel(
+                        condition = "(input.show_sum % 2) == 1",
+                        verbatimTextOutput(outputId = "summary", placeholder = FALSE)
+                    ),
+                    conditionalPanel(
+                        condition = "(input.show_res % 2) == 1",
+                        plotlyOutput(outputId = "resplot", width = "100%", height = "100%")
+                    )
                 ),
                 tabPanel(
                     # information
-                    title = "Information",
-                    textOutput(outputId = "info")
+                    title = "Informasi",
+                    verbatimTextOutput(outputId = "txt", placeholder = FALSE)
                 )
             )
         )
@@ -137,6 +164,17 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
     return(p)
 }
 
+createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line) {
+
+    p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal()
+
+    if (show_smooth_line) {
+        p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness)
+        }
+    
+    return(p)
+}
+
 #### Append Dataframe Column
 
 makeColumn <- function(col, val) {
@@ -148,7 +186,7 @@ makeColumn <- function(col, val) {
 
 ## ------------------------------------- SERVER -------------------------------------
 
-server <- function(input, output) {
+server <- function(input, output, session) {
 
     ## -- data
     get.data <- reactive({
@@ -163,12 +201,12 @@ server <- function(input, output) {
         req(input$data)
 
         # refresh
-        input$refresh
+        # input$refresh
 
         if(input$data == "Dataset Acak") {
-            isolate(generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5)))
+            generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5))
         } else if (input$data == "Dataset Bangkitan Linier" || input$data == "Dataset Bangkitan Kuadratik") {
-            isolate(generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope))
+            generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope)
         } else if (input$data == "Dataset Kasus R"){
             ### -----
             get.data()
@@ -177,12 +215,31 @@ server <- function(input, output) {
             d <- event_data("plotly_click", source = "plot_click")
             df <- data.frame(x = numeric(), y = numeric())
             if(is.null(d)) {
-                isolate(df)
+                df
             } else {
                 df <- rbind(df, data.frame(x = d$x, y = d$y))
-                isolate(df)
+                df
             }
         }
+    })
+
+    residual <- reactive({
+        model.reg <- lm(y ~ x, data())
+        res <- residuals(model.reg)
+        stdres <- studres(model.reg)
+        pred <- predict(model.reg, data())
+
+        if (input$type.res == "Raw"){
+            y <- res
+        } else {
+            y <- stdres
+        }
+        if (input$plot.res == "Galat vs X") {
+            x <- data()$x
+        } else {
+            x <- pred
+        }
+        data.frame(x = x, y = y)
     })
 
     # -- plot
@@ -201,6 +258,10 @@ server <- function(input, output) {
         }
     })
 
+    output$resplot <- renderPlotly({
+        ggplotly(createResidualPlot(residual(), "x", "y", smoothness = input$res_smooth, show_smooth_line = input$smtres))
+    })
+
     # -- table
     df <- reactive({
         tab <- makeColumn("Ukuran Data", nrow(data()))
@@ -217,6 +278,11 @@ server <- function(input, output) {
     })
 
     output$table <- renderTable(df())
+
+    output$summary <- renderPrint({
+        model.lm <- lm(y~x, data = data())
+        summary(model.lm)
+    })
 
 }
 
