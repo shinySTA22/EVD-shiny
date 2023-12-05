@@ -114,7 +114,7 @@ ui <- shinyUI(
 #### Generate Random Data
 
 generateRandomData <- function(n, type, s, slope) {
-    set.seed(rpois(1, 10000))
+    
     if(s == "kecil") {
         sd = 2
         } else if (s == "besar") {
@@ -164,12 +164,12 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
     return(p)
 }
 
-createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line) {
+createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line, x_lab, y_lab) {
 
-    p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal()
+    p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
 
     if (show_smooth_line) {
-        p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness)
+        p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness) 
         }
     
     return(p)
@@ -201,7 +201,8 @@ server <- function(input, output, session) {
         req(input$data)
 
         # refresh
-        # input$refresh
+        input$refresh
+        isolate(set.seed(rpois(1, 10000)))
 
         if(input$data == "Dataset Acak") {
             generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5))
@@ -259,7 +260,19 @@ server <- function(input, output, session) {
     })
 
     output$resplot <- renderPlotly({
-        ggplotly(createResidualPlot(residual(), "x", "y", smoothness = input$res_smooth, show_smooth_line = input$smtres))
+
+        if (input$type.res == "Raw"){
+            y_lab = "Raw Residual"
+        } else {
+            y_lab <- "Studentized Residual"
+        }
+        if (input$plot.res == "Galat vs X") {
+            x_lab <- "X"
+        } else {
+            x_lab <- "Y Predict"
+        }
+        
+        ggplotly(createResidualPlot(residual(), "x", "y", smoothness = input$res_smooth, show_smooth_line = input$smtres, x_lab, y_lab))
     })
 
     # -- table
