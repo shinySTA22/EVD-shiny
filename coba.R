@@ -18,10 +18,11 @@ get.data <- switch("rock",
 get.data      
 
 model.reg <- lm(mpg ~ hp, mtcars)
-res <- residuals(model.reg)
+res <- data.frame(err = residuals(model.reg))
 stdres <- studres(model.reg)
 pred <- predict(model.reg, mtcars)
 
+mean(res[,1])
 
         if (input$type.res == "Raw"){
             y <- res
@@ -36,3 +37,5 @@ pred <- predict(model.reg, mtcars)
         }
 
         data.frame(x = x, y = y)
+
+ggplotly(createHistogram(res, "err", bin = 1.1, show_normal_curve = TRUE))

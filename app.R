@@ -74,7 +74,7 @@ ui <- shinyUI(
                 checkboxInput(inputId = "histres", "Histogram Galat"),
                 conditionalPanel(
                     condition = "input.histres == true",
-                    sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 20, step = 0.1, value = 5),
+                    sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 10, step = 0.1, value = 5),
                     checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
                 )
             )
@@ -96,6 +96,10 @@ ui <- shinyUI(
                     conditionalPanel(
                         condition = "(input.show_res % 2) == 1",
                         plotlyOutput(outputId = "resplot", width = "100%", height = "100%")
+                    ),
+                    conditionalPanel(
+                        condition = "input.histres == true",
+                        plotlyOutput(outputId = "histplot", width = "100%", height = "100%")
                     )
                 ),
                 tabPanel(
@@ -164,6 +168,8 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
     return(p)
 }
 
+#### Create Residual Plot
+
 createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line, x_lab, y_lab) {
 
     p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
@@ -183,6 +189,17 @@ makeColumn <- function(col, val) {
     return(df)
 }
 
+#### Create Histogram of Residual
+
+createHistogram <- function(data, var, bin, show_normal_curve) {
+    if(!show_normal_curve) {
+        h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin)
+    } else {
+        h <- ggplot(data, aes_string(x = var)) + geom_histogram(aes(y = after_stat(density)), binwidth = bin) + stat_function(fun = dnorm, args = list(mean = mean(data[,1]), sd = sd(data[,1])), col = "red")
+    }
+    
+    return(h)
+}
 
 ## ------------------------------------- SERVER -------------------------------------
 
@@ -273,6 +290,12 @@ server <- function(input, output, session) {
         }
         
         ggplotly(createResidualPlot(residual(), "x", "y", smoothness = input$res_smooth, show_smooth_line = input$smtres, x_lab, y_lab))
+    })
+
+    output$histplot <- renderPlotly({
+        res <- data.frame(err = residuals(lm(y ~ x, data())))
+
+        ggplotly(createHistogram(res, "err", bin = input$bin, show_normal_curve = input$curve))
     })
 
     # -- table
