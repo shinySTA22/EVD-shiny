@@ -86,7 +86,16 @@ ui <- shinyUI(
                 tabPanel(
                     #plot
                     title = "Data",
-                    plotlyOutput(outputId = "plot", width = "100%", height = "100%"),
+                    conditionalPanel(
+                        condition = "input.data != 'Input Mandiri'",
+                        plotlyOutput(outputId = "plot", width = "100%", height = "100%")
+                    ),
+                    conditionalPanel(
+                        condition = "input.data == 'Input Mandiri'",
+                        plotOutput("plot2", click = "plot_click"),
+                        actionButton("rem_point", "Batalkan Titik Terakhir")
+                    ),
+                    
                     #tabel
                     tableOutput(outputId = "table"),
                     conditionalPanel(
@@ -214,6 +223,20 @@ server <- function(input, output, session) {
            "trees" = data.frame(x = trees$Height, y = trees$Girth))
     })
 
+    values <- reactiveValues()
+    values$DT <- data.frame(x = numeric(), y = numeric())
+    observeEvent(input$plot_click, {
+        add_row <- data.frame(x = input$plot_click$x,
+                              y = input$plot_click$y)
+        values$DT <- rbind(values$DT, add_row)
+    })
+
+    observeEvent(input$rem_point, {
+        rem_row <- values$DT[-nrow(values$DT), ]
+        values$DT <- rem_row
+    })
+
+
     data <- reactive({
         req(input$data)
 
@@ -230,14 +253,7 @@ server <- function(input, output, session) {
             get.data()
             ### ---
         } else {
-            d <- event_data("plotly_click", source = "plot_click")
-            df <- data.frame(x = numeric(), y = numeric())
-            if(is.null(d)) {
-                df
-            } else {
-                df <- rbind(df, data.frame(x = d$x, y = d$y))
-                df
-            }
+            values$DT
         }
     })
 
@@ -262,17 +278,21 @@ server <- function(input, output, session) {
 
     # -- plot
     output$plot <- renderPlotly({
-        if(input$data != "Input Mandiri"){
-            if(input$zsc == TRUE) {
-                x <- scale(data()$x)
-                y <- scale(data()$y)
-                data2 <- data.frame(x=x, y=y)
-                ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
-            } else {
-                ggplotly(createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
-            }
+        if(input$zsc == TRUE) {
+            x <- scale(data()$x)
+            y <- scale(data()$y)
+            data2 <- data.frame(x=x, y=y)
+            ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
         } else {
-            ggplotly(ggplot(data(), aes(x = x, y = y)) + geom_point() + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2])), source = "plot_click")
+            ggplotly(createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
+        }
+    })
+
+    output$plot2 <- renderPlot({
+        if(nrow(data()) > 1) {
+            createRegressionPlot(data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2]))
+        } else {
+            ggplot(data(), aes(x = x, y = y)) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2])) + theme_minimal()
         }
     })
 
