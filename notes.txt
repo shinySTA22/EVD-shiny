@@ -1,2 +1,82 @@
 # KONTEN
 
+# INPUT MANDIRI
+Pada pilihan ini, Anda dapat memasukkan secara manual nilai pasangan X dan Y pada plot yang telah disediakan. Pilihan ini memungkinkan Anda untuk mengetahui bagaimana perubahan garis regresi ketika terjadi peng-inputan amatan baru ke dalam data. Dalam hal ini, Anda dapat memasukkan data sesuai dengan rentang X dan rentang Y yang dikehendaki. Anda juga dapat menghapus/mengurungkan input terakhir yang dilakukan dengan meng-klik tombol "Batalkan Titik Terakhir". 
+
+# DATASET BILANGAN ACAK
+Pada pilihan ini, data yang ditunjukkan adalah data simulasi/buatan yang bersifat acak, yang tidak diketahui secara pasti hubungan antara peubah X (prediktor) dan peubah Y (respon). Anda dapat menagatur ukuran/banyaknya data yang ingin diperoleh dengan memilih ukuran data sesuai dengan besaran yang diinginkan. Untuk mengganti data, Anda dapat menekan tombol "Refresh" untuk memperoleh data buatan yang baru.
+
+# DATASET LINIER
+Pada pilihan ini, data yang ditunjukkan adalah data simulasi/buatan yang bersifat linier, di mana hubungan antara peubah X (prediktor) dan peubah Y (respon) bersifat linier/proporsional terlihat dari plot tebaran yang terbentuk mengikuti suatu arah garis lurus. Anda dapat menagatur ukuran/banyaknya data yang ingin diperoleh dengan memilih ukuran data sesuai dengan besaran yang diinginkan. Untuk mengganti data, Anda dapat menekan tombol "Refresh" untuk memperoleh data buatan yang baru. Anda juga dapat menentukan nilai SLOPE yang merupakan kemiringan dari arah hubungan kedua peubah, di mana akan terlihat perbedaannya antara nilai SLOPE negatif dan positif sebagaimana yang dapat Anda coba pada pilihan nilai SLOPE di samping. Terakhir, Anda dapat menentukan seberapa besar sebaran peubah dengan memilih opsi "kecil", "sedang", dan "besar" pada menu SEBARAN DATA. Terlihat jika sebarannya besar, datanya akan semakin memencar.
+
+# DATASET KUADRATIK
+Pada pilihan ini, data yang ditunjukkan adalah data simulasi/buatan yang bersifat kuadratik, di mana hubungan antara peubah X (prediktor) dan peubah Y (respon) mengikuti fungsi kuadrat terlihat dari plot tebaran yang terbentuk mengikuti kurva lengkung. Anda dapat menagatur ukuran/banyaknya data yang ingin diperoleh dengan memilih ukuran data sesuai dengan besaran yang diinginkan. Untuk mengganti data, Anda dapat menekan tombol "Refresh" untuk memperoleh data buatan yang baru. Anda juga dapat menentukan nilai SLOPE yang merupakan kemiringan dari arah hubungan kedua peubah, di mana akan terlihat perbedaannya antara nilai SLOPE negatif dan positif sebagaimana yang dapat Anda coba pada pilihan nilai SLOPE di samping. Terakhir, Anda dapat menentukan seberapa besar sebaran peubah dengan memilih opsi "kecil", "sedang", dan "besar" pada menu SEBARAN DATA. Terlihat jika sebarannya besar, datanya akan semakin memencar.
+
+# DATASET CARS
+Dataset ini merupakan data yang diperoleh melalui package `datasets` yang tersedia di R. Data ini terdiri dari dua peubah, yaitu jarak pemberhentian suatu mobil (dalam satuan ft. atau kaki) sebagai X dan kecepatan mobil (dalam satuan mil per jam) sebagai Y. Data ini terdiri dari 50 amatan/mobil yang diteliti kecepatannya.
+
+# DATASET MTCARS
+Dataset ini merupakan data yang diperoleh melalui package `datasets` yang tersedia di R. Data diambil dari majalah Motor Trend AS tahun 1974, dan terdiri dari konsumsi bahan bakar dan 10 aspek desain dan kinerja mobil untuk 32 mobil (model 1973--74). Data ini terdiri dari dua peubah, yaitu horsepower/tenaga kuda mobil sebagai X dan jarak penghabisan bahan bakar mobil (dalam satuan mil per galon) sebagai Y. Data ini terdiri dari 32 amatan/mobil yang diteliti penggunaan bahan bakarnya.
+
+# DATASET WOMEN
+Dataset ini merupakan data yang diperoleh melalui package `datasets` yang tersedia di R. Dalam data ini, tersimpan informasi mengenai tinggi badan (dalam satuan inci) sebagai peubah X, dan berat badan (dalam satuan pound) sebagai peubah Y yang dimiliki wanita-wanita di Amerika. Dataset ini terdiri dari 15 amatan/wanita yang diteliti berat dan tinggi badannya.
+
+# DATASET TREES
+Dataset ini merupakan data yang diperoleh melalui package `datasets` yang tersedia di R. Data ini memberikan pengukuran ketebalan (satuan inci) sebagai Y dan tinggi kayu (satuan kaki) sebagai X pada 31 pohon ceri hitam yang ditebang. Dikatakan bahwa lingkar pohon yang diukur adalah diameter pohon (dalam inci) pada 4 kaki 6 inci dari atas tanah. 
+
+# GARIS REGRESI
+Garis regresi adalah garis matematis yang digunakan untuk merepresentasikan hubungan statistik antara dua atau lebih peubah. Garis ini umumnya digunakan dalam analisis regresi untuk memodelkan hubungan antara peubah respon dan satu atau lebih peubah prediktor. Tujuan garis regresi adalah untuk mencari persamaan matematis yang paling baik menjelaskan pola hubungan antara peubah-peubah tersebut.
+
+Dalam regresi linear sederhana, garis regresi dapat dinyatakan dalam bentuk persamaan matematis y = ax + b, di mana:
+
+- y adalah peubah respon,
+- x adalah peubah prediktor,
+- a adalah gradien (koefisien regresi) yang mengukur tingkat perubahan dalam peubah respon sehubungan dengan peubah prediktor, dan
+- b adalah intercept, yaitu nilai y ketika x sama dengan 0.
+
+# GARIS PEMULUSAN
+Kurva pemulusan, atau smoothing curve dalam bahasa Inggris, adalah kurva atau garis yang digunakan untuk meratakan atau menghaluskan data, sehingga pola umum dari data tersebut menjadi lebih jelas tanpa kebisingan atau fluktuasi yang mungkin terjadi pada titik-titik individu.
+
+Tujuan kurva pemulusan adalah untuk membantu mengidentifikasi tren atau pola yang mendasarinya dalam data, sementara mengurangi efek fluktuasi acak atau kebisingan yang mungkin ada. Ini sering digunakan dalam analisis data untuk membuat grafik yang lebih mudah dipahami atau untuk memudahkan interpretasi pola umum dalam data.
+
+Dalam kurva ini, Anda dapat menentukan nilai pemulusan yang diinginkan antara 0 hingga 1. Semakin dekat dengan 1, maka kurva pemulusan akan semakin mendekati garis lurus.
+
+# KOEFISIEN KORELASI
+Koefisien korelasi adalah suatu ukuran statistik yang digunakan untuk mengukur sejauh mana dua peubah berkorelasi satu sama lain. Koefisien korelasi mengukur kekuatan dan arah hubungan antara dua peubah. Salah satu koefisien korelasi yang paling umum digunakan adalah koefisien korelasi Pearson.
+
+Koefisien korelasi Pearson (r) dapat memiliki nilai antara -1 hingga 1, dengan interpretasi sebagai berikut:
+
+- r=1: Korelasi positif sempurna (korelasi linier positif sempurna).
+- r=−1: Korelasi negatif sempurna (korelasi linier negatif sempurna).
+- r=0: Tidak ada korelasi linier antara dua peubah.
+
+Nilai koefisien korelasi yang mendekati 1 atau -1 menunjukkan bahwa ada hubungan linier yang kuat antara dua peubah, sedangkan nilai mendekati 0 menunjukkan bahwa tidak ada korelasi linier yang signifikan.
+
+# KOEFISIEN DETERMINASI
+Koefisien determinasi, sering disimbolkan sebagai R2, adalah suatu ukuran yang memberikan informasi tentang seberapa baik model regresi linear mampu menjelaskan variasi total dari peubah respon. Koefisien determinasi berkisar antara 0 hingga 1.
+
+Secara konsep, R2 menjelaskan proporsi dari variasi total dalam peubah respon yang dapat dijelaskan oleh peubah prediktor yang ada dalam model regresi. Nilai yang lebih tinggi menunjukkan bahwa model regresi lebih baik dalam menjelaskan variasi data. Di sisi lain, R2 yang rendah mungkin menunjukkan bahwa model tidak secara efektif menjelaskan variasi yang diamati dalam data.
+
+- R2 = 0 : Model regresi tidak menjelaskan variasi apa pun dalam peubah respon.
+- 0 < R2 < 1 : Proporsi variasi dalam peubah respon dapat dijelaskan oleh peubah prediktor dalam model. Semakin mendekati 1, semakin baik model tersebut dalam menjelaskan variasi.
+- R2 = 1 :  Model regresi menjelaskan seluruh variasi dalam peubah respon. Namun, nilai R2 yang mencapai 1 mungkin menjadi tanda adanya overfitting.
+
+# SIMPANGAN BAKU GALAT
+Simpangan baku galat (standard error of the residuals), sering disebut sebagai SSE atau SE adalah ukuran seberapa jauh nilai-nilai prediksi dari model regresi linear berbeda dari nilai-nilai observasi yang sebenarnya dalam sampel data.
+
+Simpangan baku galat dihitung dengan mengukur selisih antara nilai observasi sebenarnya dan nilai prediksi untuk setiap pengamatan dalam sampel, kemudian menghitung simpangan baku dari seluruh selisih tersebut. Simpangan baku galat memberikan informasi tentang seberapa baik model regresi cocok dengan data. Semakin kecil SSE, semakin baik model dalam memprediksi nilai-nilai observasi. 
+
+# STANDARDISASI PEUBAH 
+Standardisasi peubah (peubah) adalah proses transformasi peubah-peubah dalam suatu dataset sehingga mereka memiliki mean (rata-rata) 0 dan simpangan baku (standard deviation) 1. Tujuan dari standardisasi ini adalah untuk membawa peubah-peubah ke dalam skala yang setara dan membuat perbandingan antar peubah lebih mudah secara statistik.
+
+Hasil standardisasi ini memiliki rata-rata 0 dan simpangan baku 1. Ini memungkinkan untuk membandingkan peubah-peubah yang memiliki unit atau skala yang berbeda, serta membantu model-model statistik yang sensitif terhadap skala.
+
+# VISUALISASI GALAT 
+Dalam konteks statistik dan analisis data, "galat" (residual) mengacu pada selisih antara nilai yang diobservasi dan nilai yang diprediksi oleh suatu model. Dengan kata lain, galat adalah sisa atau kesalahan yang terjadi ketika menggunakan model untuk memprediksi nilai dalam suatu dataset.
+
+Dalam konteks regresi linear, misalnya, galat merujuk pada seberapa jauh titik data berada dari garis regresi. Tujuan dari analisis regresi adalah untuk mengurangkan galat sebanyak mungkin, sehingga model dapat memberikan prediksi yang lebih akurat terhadap data baru.
+
+# HISTOGRAM GALAT
+Histogram adalah sebuah grafik yang digunakan untuk menampilkan distribusi frekuensi dari suatu data. Histogram membagi rentang nilai data ke dalam sejumlah interval atau bins dan menghitung berapa banyak data yang jatuh ke dalam setiap interval tersebut. Histogram membantu visualisasi bentuk distribusi data, termasuk sebaran dan kecenderungan pusat data.
+
+Dalam konteks analisis regresi atau pemodelan statistik, galat atau residu adalah perbedaan antara nilai yang diobservasi dan nilai yang diprediksi. Normalitas galat, atau distribusi normal dari galat, adalah asumsi yang umumnya diajukan dalam banyak metode statistik dan pemodelan regresi. Ini berarti bahwa galat seharusnya memiliki distribusi normal. Mengevaluasi normalitas galat dapat dilakukan dengan berbagai cara, salah satunya adalah menggunakan histogram. 
