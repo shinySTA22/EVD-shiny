@@ -7,8 +7,6 @@ library(MASS)
 
 source('helper.R')
 
-stringTxt <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-
 ## --------------------------------------- UI ---------------------------------------
 ui <- fluidPage(
         titlePanel("Eksplorasi Regresi Linier"),
@@ -16,20 +14,20 @@ ui <- fluidPage(
           # sidebar
           sidebarPanel(
               # sidebar
-              selectInput(inputId = "data", "Pilih data", choices = c("Input Mandiri", "Dataset Acak", "Dataset Bangkitan Linier", "Dataset Bangkitan Kuadratik", "Dataset Kasus R")),
+              selectInput(inputId = "data", "Pilih data", choices = c("Input Mandiri", "Dataset Acak", "Dataset Buatan (Linier)", "Dataset Buatan (Kuadratik)", "Dataset Kasus R")),
               # ----- Input Mandiri
               conditionalPanel(
                   condition = "input.data == 'Input Mandiri'",
                   textOutput(outputId = "caption")
               ),
-              # ----- Dataset Acak, Dataset Bangkitan Linier, Dataset Bangkitan Kuadratik
+              # ----- Dataset Acak, Dataset Buatan (Linier), Dataset Buatan (Kuadratik)
               conditionalPanel(
-                  condition = "input.data == 'Dataset Acak' || input.data == 'Dataset Bangkitan Linier' || input.data == 'Dataset Bangkitan Kuadratik'",
-                  sliderInput(inputId = "slider.n", label = "Pilih ukuran data", min = 10, max = 300, value = 100)
+                  condition = "input.data == 'Dataset Acak' || input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
+                  sliderInput(inputId = "slider.n", label = "Tentukan banyak amatan", min = 10, max = 300, value = 100)
               ),
               # ----- Data Linier, Kuadratik
               conditionalPanel(
-                  condition = "input.data == 'Dataset Bangkitan Linier' || input.data == 'Dataset Bangkitan Kuadratik'",
+                  condition = "input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
                   sliderInput(inputId = "slope", label = "Tentukan Kemiringan/Slope", min = -5, max = 5, value = 0, step = 0.05),
                   radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar"))
               ),
@@ -60,7 +58,7 @@ ui <- fluidPage(
                   sliderInput(inputId = "slider.smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
               ),
               checkboxInput(inputId = "r", label = "Koefisien Korelasi (r)"),
-              checkboxInput(inputId = "r2", label = "Kuadrat Koefisien Korelasi (r²)"),
+              checkboxInput(inputId = "r2", label = "Koefisien Determinasi (r²)"),
               checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
               checkboxInput(inputId = "res", label = "Visualisasi Galat"),
               checkboxInput(inputId = "zsc", label = "Standardisasi Peubah"),
@@ -123,83 +121,83 @@ ui <- fluidPage(
                       conditionalPanel(
                           condition = "input.data == 'Input Mandiri'",
                           # textOutput("input_mandiri")
-                          includeMarkdown("www/input-mandiri.md")
+                          includeMarkdown("www/input_mandiri.md")
                       ),
                       # dataset acak
                       conditionalPanel(
                           condition = "input.data == 'Dataset Acak'",
-                          textOutput("dataset_acak")
+                          includeMarkdown("www/dataset_acak.md")
                       ),
-                      # dataset bangkitan linier
+                      # Dataset Buatan (Linier)
                       conditionalPanel(
-                          condition = "input.data == 'Dataset Bangkitan Linier'",
+                          condition = "input.data == 'Dataset Buatan (Linier)'",
                           # textOutput("dataset_linier")
-                          includeMarkdown("www/dataset-linier.md")
+                          includeMarkdown("www/dataset_linier.md")
                       ),
                       # dataset kuadratik
                       conditionalPanel(
-                          condition = "input.data == 'Dataset Bangkitan Kuadratik'",
-                          textOutput("dataset_kuadratik")
+                          condition = "input.data == 'Dataset Buatan (Kuadratik)'",
+                          includeMarkdown("www/dataset_kuadratik.md")
                       ),
                       # dataset R - cars
                       conditionalPanel(
                           condition = "input.kasus_R == 'cars' && input.data == 'Dataset Kasus R'",
-                          textOutput("CARS")
+                          includeMarkdown("www/CARS.md")
                       ),
                       # dataset R - mtcars
                       conditionalPanel(
                           condition = "input.kasus_R == 'mtcars' && input.data == 'Dataset Kasus R'",
-                          textOutput("MTCARS")
+                          includeMarkdown("www/MTCARS.md")
                       ),
                       # dataset R - women
                       conditionalPanel(
                           condition = "input.kasus_R == 'women' && input.data == 'Dataset Kasus R'",
-                          textOutput("WOMEN")
+                          includeMarkdown("www/WOMEN.md")
                       ),
                       # dataset R - trees
                       conditionalPanel(
                           condition = "input.kasus_R == 'trees' && input.data == 'Dataset Kasus R'",
-                          textOutput("TREES")
+                          includeMarkdown("www/TREES.md")
                       ),
                       # garis regresi linier
                       conditionalPanel(
                           condition = "input.reg == true",
-                          textOutput("REG")
+                          includeMarkdown("www/garis_regresi.md")
                       ),
-                      # garis smoothing
+                      # garis pemulusan
                       conditionalPanel(
                           condition = "input.smt == true",
-                          textOutput("SMT")
+                          includeMarkdown("www/garis_pemulusan.md")
                       ),
                       # R
                       conditionalPanel(
                           condition = "input.r == true",
-                          textOutput("R")
+                          includeMarkdown("www/korelasi.md")
                       ),
                       # R2
                       conditionalPanel(
                           condition = "input.r2 == true",
-                          textOutput("R2")
+                          includeMarkdown("www/determinasi.md")
                       ),
                       # Galat
                       conditionalPanel(
                           condition = "input.std == true || input.res == true",
-                          textOutput("STDRES")
+                          includeMarkdown("www/simp_galat.md")
                       ),
                       # Standardisasi Peubah
                       conditionalPanel(
                           condition = "input.zsc == true",
-                          textOutput("ZSC")
+                          includeMarkdown("www/standardisasi.md")
                       ),
                       # Plot Galat
                       conditionalPanel(
                           condition = "(input.show_res % 2) == 1",
-                          textOutput("GALAT")
+                          includeMarkdown("www/visualisasi_galat.md")
                       ),
                       # Plot Histogram
                       conditionalPanel(
                           condition = "input.histres == true",
-                          textOutput("HIST")
+                          includeMarkdown("www/histogram_galat.md")
                       )
                   )
               )
@@ -244,7 +242,7 @@ server <- function(input, output, session) {
 
         if(input$data == "Dataset Acak") {
             generateRandomData(n = input$slider.n, type = input$data, s = "sedang", slope = rnorm(1, mean = 0, sd = 5))
-        } else if (input$data == "Dataset Bangkitan Linier" || input$data == "Dataset Bangkitan Kuadratik") {
+        } else if (input$data == "Dataset Buatan (Linier)" || input$data == "Dataset Buatan (Kuadratik)") {
             generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope)
         } else if (input$data == "Dataset Kasus R"){
             ### -----
@@ -318,12 +316,12 @@ server <- function(input, output, session) {
 
     # -- table
     df <- reactive({
-        tab <- makeColumn("Ukuran Data", nrow(data()))
+        tab <- makeColumn("Banyak Amatan", nrow(data()))
         if(input$r == TRUE){
-            tab <- cbind(tab, makeColumn("Korelasi X dan Y", cor(data()$x, data()$y)))
+            tab <- cbind(tab, makeColumn("Koefisien Korelasi (r)", cor(data()$x, data()$y)))
         }
         if(input$r2 == TRUE){
-            tab <- cbind(tab, makeColumn("Kuadrat Korelasi X dan Y", (cor(data()$x, data()$y))^2))
+            tab <- cbind(tab, makeColumn("Koefisien Determinasi (r²)", paste(round((cor(data()$x, data()$y))^2*100, 2), "%")))
         }
         if(input$std == TRUE){
             tab <- cbind(tab, makeColumn("Simpangan Baku Galat", sd(data()$y - predict(lm(data()$y ~ data()$x)))))
@@ -337,26 +335,6 @@ server <- function(input, output, session) {
         model.lm <- lm(y~x, data = data())
         summary(model.lm)
     })
-
-    # -- text
-
-    # output$input_mandiri <- renderText({ paste0("INPUT MANDIRI ----- ", stringTxt) })
-    output$dataset_acak <- renderText({ paste0("DATASET BILANGAN ACAK ----- ", stringTxt) })
-    # output$dataset_linier <- renderText({ paste0("DATASET LINIER ----- ", stringTxt) })
-    output$dataset_kuadratik <- renderText({ paste0("DATASET KUADRATIK ----- ", stringTxt) })
-    output$CARS <- renderText({ paste0("DATASET CARS ----- ", stringTxt) })
-    output$MTCARS <- renderText({ paste0("DATASET MTCARS ----- ", stringTxt) })
-    output$WOMEN <- renderText({ paste0("DATASET WOMEN ----- ", stringTxt) })
-    output$TREES <- renderText({ paste0("DATASET TREES ----- ", stringTxt) })
-
-    output$REG <- renderText({ paste0("GARIS REGRESI ----- ", stringTxt) })
-    output$SMT <- renderText({ paste0("GARIS PEMULUSAN ----- ", stringTxt) })
-    output$R <- renderText({ paste0("KOEFISIEN KORELASI ----- ", stringTxt) })
-    output$R2 <- renderText({ paste0("KOEFISIEN KORELASI KUADRAT ----- ", stringTxt) })
-    output$STDRES <- renderText({ paste0("SIMPANGAN BAKU GALAT ----- ", stringTxt) })
-    output$ZSC <- renderText({ paste0("STANDARDISASI PEUBAH ----- ", stringTxt) })
-    output$GALAT <- renderText({ paste0("VISUALISASI GALAT ----- ", stringTxt) })
-    output$HIST <- renderText({ paste0("HISTOGRAM GALAT ----- ", stringTxt) })
 
 }
 
