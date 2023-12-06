@@ -10,6 +10,7 @@ source('helper.R')
 ## --------------------------------------- UI ---------------------------------------
 ui <- fluidPage(
         titlePanel("Eksplorasi Regresi Linier"),
+        withMathJax(),
         sidebarLayout(
           # sidebar
           sidebarPanel(
