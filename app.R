@@ -274,21 +274,42 @@ server <- function(input, output, session) {
 
     # -- plot
     output$plot <- renderPlotly({
+
+        if(input$data != "Dataset Kasus R") {
+            xlab <- "X / prediktor"
+            ylab <- "Y / respon"
+        } else {
+            if(input$kasus_R == "cars"){
+                xlab <- "Jarak tempuh (ft.)"
+                ylab <- "Kecepatan (mil/jam)"
+            } else if (input$kasus_R == "mtcars") {
+                xlab <- "Tenaga kuda"
+                ylab <- "Jarak tempuh bahan bakar (mil/galon)"
+            } else if (input$kasus_R == "women") {
+                xlab <- "Tinggi badan (inci)"
+                ylab <- "Berat badan (pond)"
+            } else {
+                xlab <- "Tinggi kayu pohon (ft.)"
+                ylab <- "Ketebalan pohon (inci)"
+            }
+        }
+    
         if(input$zsc == TRUE) {
             x <- scale(data()$x)
             y <- scale(data()$y)
             data2 <- data.frame(x=x, y=y)
-            ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
+            ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = "X terstandardisasi", y_lab = "Y terstandardisasi"))
         } else {
-            ggplotly(createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res))
+            ggplotly(createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = xlab, y_lab = ylab))
         }
     })
 
     output$plot2 <- renderPlot({
-        if(nrow(data()) > 1) {
-            createRegressionPlot(data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2]))
+
+        if(nrow(data()) > 0) {
+            createRegressionPlot(data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = "X / prediktor", y_lab = "Y / respon") + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2]))
         } else {
-            ggplot(data(), aes(x = x, y = y)) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2])) + theme_minimal()
+            ggplot(data(), aes(x = x, y = y)) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2])) + theme_minimal() + labs(y = "Y / respon", x = "X / prediktor")
         }
     })
 

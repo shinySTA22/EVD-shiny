@@ -24,12 +24,12 @@ generateRandomData <- function(n, type, s, slope) {
 
 #### Create Regression Plot
 
-createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, show_smooth_line, show_residuals) {
+createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, show_smooth_line, show_residuals, x_lab, y_lab) {
   # -- model regresi
   lm_model <- lm(formula = paste(y_var, "~", x_var), data = data)
   
   # -- ggplot regresi
-  p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal()
+  p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal() + labs(y = y_lab, x = x_lab)
   
   # -- ggplot regression line = T
   if (show_reg_line) {
