@@ -140,22 +140,22 @@ ui <- shinyUI(
                     ),
                     # dataset R - cars
                     conditionalPanel(
-                        condition = "input.kasus_R == 'cars'",
+                        condition = "input.kasus_R == 'cars' && input.data == 'Dataset Kasus R'",
                         textOutput("CARS")
                     ),
                     # dataset R - mtcars
                     conditionalPanel(
-                        condition = "input.kasus_R == 'mtcars'",
+                        condition = "input.kasus_R == 'mtcars' && input.data == 'Dataset Kasus R'",
                         textOutput("MTCARS")
                     ),
                     # dataset R - women
                     conditionalPanel(
-                        condition = "input.kasus_R == 'women'",
+                        condition = "input.kasus_R == 'women' && input.data == 'Dataset Kasus R'",
                         textOutput("WOMEN")
                     ),
                     # dataset R - trees
                     conditionalPanel(
-                        condition = "input.kasus_R == 'trees'",
+                        condition = "input.kasus_R == 'trees' && input.data == 'Dataset Kasus R'",
                         textOutput("TREES")
                     ),
                     # garis regresi linier
@@ -177,6 +177,26 @@ ui <- shinyUI(
                     conditionalPanel(
                         condition = "input.r2 == true",
                         textOutput("R2")
+                    ),
+                    # Galat
+                    conditionalPanel(
+                        condition = "input.std == true || input.res == true",
+                        textOutput("STDRES")
+                    ),
+                    # Standardisasi Peubah
+                    conditionalPanel(
+                        condition = "input.zsc == true",
+                        textOutput("ZSC")
+                    ),
+                    # Plot Galat
+                    conditionalPanel(
+                        condition = "(input.show_res % 2) == 1",
+                        textOutput("GALAT")
+                    ),
+                    # Plot Histogram
+                    conditionalPanel(
+                        condition = "input.histres == true",
+                        textOutput("HIST")
                     )
                 )
             )
@@ -418,7 +438,10 @@ server <- function(input, output, session) {
     output$SMT <- renderText({ paste0("GARIS PEMULUSAN ----- ", stringTxt) })
     output$R <- renderText({ paste0("KOEFISIEN KORELASI ----- ", stringTxt) })
     output$R2 <- renderText({ paste0("KOEFISIEN KORELASI KUADRAT ----- ", stringTxt) })
-
+    output$STDRES <- renderText({ paste0("SIMPANGAN BAKU GALAT ----- ", stringTxt) })
+    output$ZSC <- renderText({ paste0("STANDARDISASI PEUBAH ----- ", stringTxt) })
+    output$GALAT <- renderText({ paste0("VISUALISASI GALAT ----- ", stringTxt) })
+    output$HIST <- renderText({ paste0("HISTOGRAM GALAT ----- ", stringTxt) })
 
 }
 
