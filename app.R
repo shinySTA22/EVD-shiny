@@ -5,6 +5,8 @@ library(gridlayout)
 library(bslib)
 library(MASS)
 
+stringTxt <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+
 ## --------------------------------------- UI ---------------------------------------
 ui <- shinyUI(
     fluidPage(
@@ -28,12 +30,19 @@ ui <- shinyUI(
             conditionalPanel(
                 condition = "input.data == 'Dataset Bangkitan Linier' || input.data == 'Dataset Bangkitan Kuadratik'",
                 sliderInput(inputId = "slope", label = "Tentukan Kemiringan/Slope", min = -5, max = 5, value = 0, step = 0.05),
-                radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar")),
+                radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar"))
             ),
             # ----- Dataset dari R
             conditionalPanel(
                 condition = "input.data == 'Dataset Kasus R'",
-                selectInput(inputId = "kasus.R", "Pilih Kasus", choices = c("cars", "mtcars", "women", "trees"))
+                selectInput(inputId = "kasus_R", "Pilih Kasus", choices = c("cars", "mtcars", "women", "trees"))
+            ),
+            
+            # ----- Input Mandiri
+            conditionalPanel(
+                condition = "input.data == 'Input Mandiri'",
+                sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
+                sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10))
             ),
 
             # ----- Refresh Button
@@ -54,11 +63,6 @@ ui <- shinyUI(
             checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
             checkboxInput(inputId = "res", label = "Visualisasi Galat"),
             checkboxInput(inputId = "zsc", label = "Standardisasi Peubah"),
-            conditionalPanel(
-                condition = "input.data == 'Input Mandiri'",
-                sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
-                sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10))
-            ),
             actionButton(inputId = "show_sum", "Tampilkan Ringkasan"),
             h5(""),
             actionButton(inputId = "show_res", "Tampilkan Galat"),
@@ -114,7 +118,66 @@ ui <- shinyUI(
                 tabPanel(
                     # information
                     title = "Informasi",
-                    verbatimTextOutput(outputId = "txt", placeholder = FALSE)
+                    # input mandiri
+                    conditionalPanel(
+                        condition = "input.data == 'Input Mandiri'",
+                        textOutput("input_mandiri")
+                    ),
+                    # dataset acak
+                    conditionalPanel(
+                        condition = "input.data == 'Dataset Acak'",
+                        textOutput("dataset_acak")
+                    ),
+                    # dataset bangkitan linier
+                    conditionalPanel(
+                        condition = "input.data == 'Dataset Bangkitan Linier'",
+                        textOutput("dataset_linier")
+                    ),
+                    # dataset kuadratik
+                    conditionalPanel(
+                        condition = "input.data == 'Dataset Bangkitan Kuadratik'",
+                        textOutput("dataset_kuadratik")
+                    ),
+                    # dataset R - cars
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'cars'",
+                        textOutput("CARS")
+                    ),
+                    # dataset R - mtcars
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'mtcars'",
+                        textOutput("MTCARS")
+                    ),
+                    # dataset R - women
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'women'",
+                        textOutput("WOMEN")
+                    ),
+                    # dataset R - trees
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'trees'",
+                        textOutput("TREES")
+                    ),
+                    # garis regresi linier
+                    conditionalPanel(
+                        condition = "input.reg == true",
+                        textOutput("REG")
+                    ),
+                    # garis smoothing
+                    conditionalPanel(
+                        condition = "input.smt == true",
+                        textOutput("SMT")
+                    ),
+                    # R
+                    conditionalPanel(
+                        condition = "input.r == true",
+                        textOutput("R")
+                    ),
+                    # R2
+                    conditionalPanel(
+                        condition = "input.r2 == true",
+                        textOutput("R2")
+                    )
                 )
             )
         )
@@ -216,7 +279,7 @@ server <- function(input, output, session) {
 
     ## -- data
     get.data <- reactive({
-        switch(input$kasus.R,
+        switch(input$kasus_R,
            "cars" = data.frame(x = cars$speed, y = cars$dist),
            "women" = data.frame(x = women$height, y = women$weight),
            "mtcars" = data.frame(x = mtcars$hp, y = mtcars$mpg),
@@ -339,6 +402,23 @@ server <- function(input, output, session) {
         model.lm <- lm(y~x, data = data())
         summary(model.lm)
     })
+
+    # -- text
+
+    output$input_mandiri <- renderText({ paste0("INPUT MANDIRI ----- ", stringTxt) })
+    output$dataset_acak <- renderText({ paste0("DATASET BILANGAN ACAK ----- ", stringTxt) })
+    output$dataset_linier <- renderText({ paste0("DATASET LINIER ----- ", stringTxt) })
+    output$dataset_kuadratik <- renderText({ paste0("DATASET KUADRATIK ----- ", stringTxt) })
+    output$CARS <- renderText({ paste0("DATASET CARS ----- ", stringTxt) })
+    output$MTCARS <- renderText({ paste0("DATASET MTCARS ----- ", stringTxt) })
+    output$WOMEN <- renderText({ paste0("DATASET WOMEN ----- ", stringTxt) })
+    output$TREES <- renderText({ paste0("DATASET TREES ----- ", stringTxt) })
+
+    output$REG <- renderText({ paste0("GARIS REGRESI ----- ", stringTxt) })
+    output$SMT <- renderText({ paste0("GARIS PEMULUSAN ----- ", stringTxt) })
+    output$R <- renderText({ paste0("KOEFISIEN KORELASI ----- ", stringTxt) })
+    output$R2 <- renderText({ paste0("KOEFISIEN KORELASI KUADRAT ----- ", stringTxt) })
+
 
 }
 

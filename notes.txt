@@ -1,0 +1,5 @@
+Issues:
+- Tombol refresh pada input.data == 'Input Mandiri'
+- Keterangan teks/caption untuk input.data == 'Input Mandiri'
+- Dataset CARS active di background
+- text belum rapi
