@@ -66,23 +66,22 @@ ui <- fluidPage(
               checkboxInput(inputId = "zscX", label = "Standardisasi Peubah X"),
               checkboxInput(inputId = "zscY", label = "Standardisasi Peubah Y"),
               actionButton(inputId = "show_sum", "Tampilkan Ringkasan"),
+
               h5(""),
-              actionButton(inputId = "show_res", "Tampilkan Galat"),
+              selectInput(inputId = "show_res", "Pilih Jenis Tampilan Galat", choices = c("Pilih Salah Satu", "Plot Tebaran", "Histogram")),
               conditionalPanel(
-                  condition = "(input.show_res % 2) == 1",
-                  radioButtons(inputId = "type.res", "Jenis Galat", choices = c("Raw", "Studentized")),
-                  radioButtons(inputId = "plot.res", "Jenis Plot", choices = c("Galat vs X", "Galat vs Y duga")),
-                  checkboxInput(inputId = "smtres", "Garis Pemulusan"),
-                  conditionalPanel(
-                      condition = "input.smtres == true",
-                      sliderInput(inputId = "res_smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
-                  ),
-                  checkboxInput(inputId = "histres", "Histogram Galat"),
-                  conditionalPanel(
-                      condition = "input.histres == true",
-                      sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 10, step = 0.1, value = 5),
-                      checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
-                  )
+                condition = "input.show_res == 'Plot Tebaran'",
+                radioButtons(inputId = "type.res", "Jenis Galat", choices = c("Raw", "Studentized")),
+                radioButtons(inputId = "plot.res", "Jenis Plot", choices = c("Galat vs X", "Galat vs Y duga")),
+                checkboxInput(inputId = "smtres", "Garis Pemulusan"),
+                conditionalPanel(
+                    condition = "input.smtres == true",
+                    sliderInput(inputId = "res_smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
+                    )),
+              conditionalPanel(
+                condition = "input.show_res == 'Histogram'",
+                sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 10, step = 0.1, value = 5),
+                checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
               )
           ),
           # main
@@ -109,11 +108,11 @@ ui <- fluidPage(
                           verbatimTextOutput(outputId = "summary", placeholder = FALSE)
                       ),
                       conditionalPanel(
-                          condition = "(input.show_res % 2) == 1",
+                          condition = "input.show_res == 'Plot Tebaran'",
                           plotlyOutput(outputId = "resplot", width = "100%", height = "100%")
                       ),
                       conditionalPanel(
-                          condition = "input.histres == true",
+                          condition = "input.show_res == 'Histogram'",
                           plotlyOutput(outputId = "histplot", width = "100%", height = "100%")
                       )
                   ),
@@ -194,12 +193,12 @@ ui <- fluidPage(
                       ),
                       # Plot Galat
                       conditionalPanel(
-                          condition = "(input.show_res % 2) == 1",
+                          condition = "input.show_res == 'Plot Tebaran'",
                           includeMarkdown("www/visualisasi_galat.md")
                       ),
                       # Plot Histogram
                       conditionalPanel(
-                          condition = "input.histres == true",
+                          condition = "input.show_res == 'Histogram'",
                           includeMarkdown("www/histogram_galat.md")
                       )
                   )
@@ -328,6 +327,12 @@ server <- function(input, output, session) {
 
     output$resplot <- renderPlotly({
 
+        if (nrow(residual()) == 0) {
+            dat <- data.frame(x = 0, y = 0)
+        } else {
+            dat <- residual()
+        }
+
         if (input$type.res == "Raw"){
             y_lab = "Raw Residual"
         } else {
@@ -339,11 +344,15 @@ server <- function(input, output, session) {
             x_lab <- "Y Predict"
         }
         
-        ggplotly(createResidualPlot(residual(), "x", "y", smoothness = input$res_smooth, show_smooth_line = input$smtres, x_lab, y_lab))
+        ggplotly(createResidualPlot(dat, "x", "y", smoothness = input$res_smooth, show_smooth_line = input$smtres, x_lab, y_lab))
     })
 
     output$histplot <- renderPlotly({
-        res <- data.frame(err = residuals(lm(y ~ x, data())))
+        if (nrow(data()) == 0) {
+            res <- data.frame(err = 0)
+        } else {
+            res <- data.frame(err = residuals(lm(y ~ x, data())))
+        }
 
         ggplotly(createHistogram(res, "err", bin = input$bin, show_normal_curve = input$curve))
     })
