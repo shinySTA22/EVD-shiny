@@ -88,10 +88,13 @@ ui <- fluidPage(
           # main
           mainPanel(
               tabsetPanel(
-                  #tab 1
+                  tabPanel(
+                    title = "Data",
+                    dataTableOutput(outputId = "data_table")
+                  ),
                   tabPanel(
                       #plot
-                      title = "Data",
+                      title = "Analisis",
                       conditionalPanel(
                           condition = "input.data != 'Input Mandiri'",
                           plotlyOutput(outputId = "plot", width = "100%", height = "100%")
