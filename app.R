@@ -78,7 +78,7 @@ ui <- fluidPage(
                         )),
                 conditionalPanel(
                     condition = "input.show_res == 'Histogram'",
-                    sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 10, step = 0.1, value = 5),
+                    sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 0.1, max = 10, step = 0.1, value = 5),
                     checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
                     )
             ),
@@ -422,3 +422,4 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui=ui, server=server)
+

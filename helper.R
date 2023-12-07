@@ -82,9 +82,9 @@ makeColumn <- function(col, val) {
 
 createHistogram <- function(data, var, bin, show_normal_curve) {
 	if(!show_normal_curve) {
-		h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin) 
+		h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin, colour = 1, fill = "#f48194") + theme_minimal()
 	} else {
-		h <- ggplot(data, aes_string(x = var)) + geom_histogram(aes(y = after_stat(density)), binwidth = bin) + stat_function(fun = dnorm, args = list(mean = mean(data[,1]), sd = sd(data[,1])), col = "red")
+		h <- ggplot(data, aes_string(x = var)) + geom_histogram(aes(y = ..density..), binwidth = bin, colour = 1, fill = "#f48194") + geom_density(lwd = 1, colour = 4, fill = "#00d0ff", alpha = 0.6) + theme_minimal()
 	}
 		
 	return(h)
