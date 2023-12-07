@@ -42,12 +42,13 @@ ui <- fluidPage(
               conditionalPanel(
                   condition = "input.data == 'Input Mandiri'",
                   sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
-                  sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10))
+                  sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10)),
+                  actionButton("reset", "Reset")
               ),
         
               # ----- Refresh Button
               conditionalPanel(
-                  condition = "input.data != 'Dataset Kasus R'",
+                  condition = "input.data != 'Dataset Kasus R' && input.data != 'Input Mandiri'",
                   actionButton("refresh", "Refresh")
               ),
               # ----- Pilihan-pilihan
@@ -234,6 +235,10 @@ server <- function(input, output, session) {
         values$DT <- rem_row
     })
 
+    observeEvent(input$reset, {
+        del_row <- data.frame(x = numeric(), y = numeric())
+        values$DT <- del_row
+    })
 
     data <- reactive({
         req(input$data)
