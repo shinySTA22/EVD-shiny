@@ -321,9 +321,27 @@ server <- function(input, output, session) {
     })
 
     output$plot2 <- renderPlot({
-
+        
         if(nrow(data()) > 0) {
-            createRegressionPlot(data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = "X / prediktor", y_lab = "Y / respon") + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2]))
+            xlab <- "X / prediktor"
+            ylab <- "Y / respon"
+            data2 <- data()
+            if (input$zscX == TRUE || input$zscY == TRUE) {
+                if (input$zscX == TRUE) {
+                    data2$x <- scale(data2$x)
+                    xlab <- "X terstandardisasi"
+                } 
+                if (input$zscY == TRUE) {
+                    data2$y <- scale(data2$y)
+                    ylab <- "Y terstandardisasi"
+                }
+
+                createRegressionPlot(data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = xlab, y_lab = ylab) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2]))
+
+            } else {
+                createRegressionPlot(data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = "X / prediktor", y_lab = "Y / respon") + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2]))
+            }            
+            
         } else {
             ggplot(data(), aes(x = x, y = y)) + lims(x = c(input$slider.x[1], input$slider.x[2]), y = c(input$slider.y[1], input$slider.y[2])) + theme_minimal() + labs(y = "Y / respon", x = "X / prediktor")
         }
@@ -387,6 +405,12 @@ server <- function(input, output, session) {
 
     output$data_table <- renderDataTable({
         data()
+    })
+
+    # -- text
+
+    output$caption <- renderText({
+        "Arahkan kursor ke koordinat X dan Y yang diinginkan dan klik pada lokasi tersebut untuk merekam data."
     })
 
 }
