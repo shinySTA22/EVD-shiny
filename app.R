@@ -88,7 +88,8 @@ ui <- fluidPage(
                 ## ----- DATA
                 tabPanel(
                     title = "Data",
-                    dataTableOutput(outputId = "data_table")
+                    dataTableOutput(outputId = "data_table"),
+                    downloadButton("downTable", "Unduh Tabel (CSV)")
                     ),
                 ## ----- ANALISIS
                 tabPanel(
@@ -408,6 +409,15 @@ server <- function(input, output, session) {
     output$caption <- renderText({
         "Arahkan kursor ke koordinat X dan Y yang diinginkan dan klik pada lokasi tersebut untuk merekam data."
     })
+
+    # -- download
+
+    output$downTable <- downloadHandler(
+        filename = "data.csv",
+        content = function(fname){
+            write.csv(data(), fname)
+            }
+    )
 
 }
 
