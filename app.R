@@ -385,6 +385,10 @@ server <- function(input, output, session) {
         df
     })
 
+    output$data_table <- renderDataTable({
+        data()
+    })
+
 }
 
 shinyApp(ui=ui, server=server)
