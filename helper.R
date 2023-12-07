@@ -29,23 +29,23 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
   lm_model <- lm(formula = paste(y_var, "~", x_var), data = data)
   
   # -- ggplot regresi
-  p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal() + labs(y = y_lab, x = x_lab)
+  p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = "black", fill = "#1ec289f0") + theme_minimal() + labs(y = y_lab, x = x_lab)
   
   # -- ggplot regression line = T
   if (show_reg_line) {
-    p <- p + geom_smooth(method = "lm", se = FALSE, color = "#5959b8")
+    p <- p + geom_smooth(method = "lm", se = FALSE, color = "#6262be", size = 1)
   }
   
   # -- ggplot smooth line = T
   if (show_smooth_line) {
-    p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness)
+    p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness, size = 1)
   }
   
   # -- ggplot show residuals = T
   if (show_residuals) {
     residuals <- residuals(lm_model)
     data$residuals <- residuals
-    p <- p + geom_segment(aes(xend = data[[x_var]], yend = predict(lm_model)), color = "#f7f02b")
+    p <- p + geom_segment(aes(xend = data[[x_var]], yend = predict(lm_model)), color = "#e252bc")
   }
   
   ## -- konversi ke plotly
@@ -57,10 +57,10 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
 
 createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line, x_lab, y_lab) {
   
-  p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point() + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
+  p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = "black", fill = "#1ec289f0") + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
   
   if (show_smooth_line) {
-    p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness) 
+    p <- p + geom_smooth(method = "loess", se = FALSE, color = "#1ba0c1", span = smoothness) 
   }
   
   return(p)
