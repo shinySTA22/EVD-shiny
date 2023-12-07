@@ -10,206 +10,204 @@ source('helper.R')
 
 ## --------------------------------------- UI ---------------------------------------
 ui <- fluidPage(
-        titlePanel("Eksplorasi Regresi Linier"),
-        withMathJax(),
-        sidebarLayout(
-          # sidebar
-          sidebarPanel(
-              # sidebar
-              selectInput(inputId = "data", "Pilih data", choices = c("Input Mandiri", "Dataset Acak", "Dataset Buatan (Linier)", "Dataset Buatan (Kuadratik)", "Dataset Kasus R")),
-              # ----- Input Mandiri
-              conditionalPanel(
-                  condition = "input.data == 'Input Mandiri'",
-                  textOutput(outputId = "caption")
-              ),
-              # ----- Dataset Acak, Dataset Buatan (Linier), Dataset Buatan (Kuadratik)
-              conditionalPanel(
-                  condition = "input.data == 'Dataset Acak' || input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
-                  sliderInput(inputId = "slider.n", label = "Tentukan banyak amatan", min = 10, max = 300, value = 100)
-              ),
-              # ----- Data Linier, Kuadratik
-              conditionalPanel(
-                  condition = "input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
-                  sliderInput(inputId = "slope", label = "Tentukan Kemiringan/Slope", min = -5, max = 5, value = 0, step = 0.05),
-                  radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar"))
-              ),
-              # ----- Dataset dari R
-              conditionalPanel(
-                  condition = "input.data == 'Dataset Kasus R'",
-                  selectInput(inputId = "kasus_R", "Pilih Kasus", choices = c("cars", "mtcars", "women", "trees"))
-              ),
-              
-              # ----- Input Mandiri
-              conditionalPanel(
-                  condition = "input.data == 'Input Mandiri'",
-                  sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
-                  sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10)),
-                  actionButton("reset", "Reset")
-              ),
-        
-              # ----- Refresh Button
-              conditionalPanel(
-                  condition = "input.data != 'Dataset Kasus R' && input.data != 'Input Mandiri'",
-                  actionButton("refresh", "Refresh")
-              ),
-              # ----- Pilihan-pilihan
-              h3(""),
-              checkboxInput(inputId = "reg", label = "Garis Regresi Linier"),
-              checkboxInput(inputId = "smt", label = "Garis Tren Pemulusan"),
-              conditionalPanel(
-                  condition = "input.smt == true",
-                  sliderInput(inputId = "slider.smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
-              ),
-              checkboxInput(inputId = "r", label = "Koefisien Korelasi (r)"),
-              checkboxInput(inputId = "r2", label = "Koefisien Determinasi (r²)"),
-              checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
-              checkboxInput(inputId = "res", label = "Visualisasi Galat"),
-              checkboxInput(inputId = "zscX", label = "Standardisasi Peubah X"),
-              checkboxInput(inputId = "zscY", label = "Standardisasi Peubah Y"),
-              actionButton(inputId = "show_sum", "Tampilkan Ringkasan"),
+    titlePanel("Eksplorasi Regresi Linier"),
+    withMathJax(),
+    sidebarLayout(
 
-              h5(""),
-              selectInput(inputId = "show_res", "Pilih Jenis Tampilan Galat", choices = c("Pilih Salah Satu", "Plot Tebaran", "Histogram")),
-              conditionalPanel(
-                condition = "input.show_res == 'Plot Tebaran'",
-                radioButtons(inputId = "type.res", "Jenis Galat", choices = c("Raw", "Studentized")),
-                radioButtons(inputId = "plot.res", "Jenis Plot", choices = c("Galat vs X", "Galat vs Y duga")),
-                checkboxInput(inputId = "smtres", "Garis Pemulusan"),
+        # ---------------- SIDEBAR
+        sidebarPanel(
+            ## ------ DATA
+            selectInput(inputId = "data", "Pilih data", choices = c("Input Mandiri", "Dataset Acak", "Dataset Buatan (Linier)", "Dataset Buatan (Kuadratik)", "Dataset Kasus R")),
+            # ----- Input Mandiri
+            conditionalPanel(
+                condition = "input.data == 'Input Mandiri'",
+                textOutput(outputId = "caption"),
+                sliderInput(inputId = "slider.x", label = "Atur rentang X", min = -100, max = 100, value = c(-10, 10)),
+                sliderInput(inputId = "slider.y", label = "Atur rentang Y", min = -100, max = 100, value = c(-10, 10)),
+                actionButton("reset", "Reset")
+                ),
+            # ----- Dataset Acak, Dataset Buatan (Linier), Dataset Buatan (Kuadratik)
+            conditionalPanel(
+                condition = "input.data == 'Dataset Acak' || input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
+                sliderInput(inputId = "slider.n", label = "Tentukan banyak amatan", min = 10, max = 300, value = 100)
+                ),
+            # ----- Data Linier, Kuadratik
+            conditionalPanel(
+                condition = "input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
+                sliderInput(inputId = "slope", label = "Tentukan Kemiringan/Slope", min = -5, max = 5, value = 0, step = 0.05),
+                radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar"))
+                ),
+            # ----- Dataset dari R
+            conditionalPanel(
+                condition = "input.data == 'Dataset Kasus R'",
+                selectInput(inputId = "kasus_R", "Pilih Kasus", choices = c("Jarak dan Kecepatan Mobil", "Bahan Bakar Mobil", "Tinggi vs Berat Badan Wanita", "Pengukuran Ketebalan Pohon"))
+                ),
+                
+            # ----- Refresh Button
+            conditionalPanel(
+                condition = "input.data != 'Dataset Kasus R' && input.data != 'Input Mandiri'",
+                actionButton("refresh", "Refresh")
+                ),
+              
+            ## ------ PILIHAN-PILIHAN
+            h5(""),
+            checkboxInput(inputId = "reg", label = "Garis Regresi Linier"),
+            checkboxInput(inputId = "smt", label = "Garis Tren Pemulusan"),
+            conditionalPanel(
+                condition = "input.smt == true",
+                sliderInput(inputId = "slider.smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
+                ),
+                checkboxInput(inputId = "r", label = "Koefisien Korelasi (r)"),
+                checkboxInput(inputId = "r2", label = "Koefisien Determinasi (r²)"),
+                checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
+                checkboxInput(inputId = "res", label = "Visualisasi Galat"),
+                checkboxInput(inputId = "zscX", label = "Standardisasi Peubah X"),
+                checkboxInput(inputId = "zscY", label = "Standardisasi Peubah Y"),
+                actionButton(inputId = "show_sum", "Tampilkan Ringkasan"),
+                
+                h5(""),
+                selectInput(inputId = "show_res", "Pilih Jenis Tampilan Galat", choices = c("Pilih Salah Satu", "Plot Tebaran", "Histogram")),
                 conditionalPanel(
-                    condition = "input.smtres == true",
-                    sliderInput(inputId = "res_smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
-                    )),
-              conditionalPanel(
-                condition = "input.show_res == 'Histogram'",
-                sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 10, step = 0.1, value = 5),
-                checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
-              )
-          ),
-          # main
-          mainPanel(
-              tabsetPanel(
-                  tabPanel(
+                    condition = "input.show_res == 'Plot Tebaran'",
+                    radioButtons(inputId = "type.res", "Jenis Galat", choices = c("Raw", "Studentized")),
+                    radioButtons(inputId = "plot.res", "Jenis Plot", choices = c("Galat vs X", "Galat vs Y duga")),
+                    checkboxInput(inputId = "smtres", "Garis Pemulusan"),
+                    conditionalPanel(
+                        condition = "input.smtres == true",
+                        sliderInput(inputId = "res_smooth", label = "Pilih ukuran pemulusan", min = 0, max = 1, value = 0.5)
+                        )),
+                conditionalPanel(
+                    condition = "input.show_res == 'Histogram'",
+                    sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 1, max = 10, step = 0.1, value = 5),
+                    checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
+                    )
+            ),
+        # ---------------- MAIN
+        mainPanel(
+            tabsetPanel(
+                ## ----- DATA
+                tabPanel(
                     title = "Data",
                     dataTableOutput(outputId = "data_table")
-                  ),
-                  tabPanel(
-                      #plot
-                      title = "Analisis",
-                      conditionalPanel(
-                          condition = "input.data != 'Input Mandiri'",
-                          plotlyOutput(outputId = "plot", width = "100%", height = "100%")
-                      ),
-                      conditionalPanel(
-                          condition = "input.data == 'Input Mandiri'",
-                          plotOutput("plot2", click = "plot_click"),
-                          actionButton("rem_point", "Batalkan Titik Terakhir")
-                      ),
+                    ),
+                ## ----- ANALISIS
+                tabPanel(
+                    ## -- plot
+                    title = "Analisis",
+                    conditionalPanel(
+                        condition = "input.data != 'Input Mandiri'",
+                        plotlyOutput(outputId = "plot", width = "100%", height = "100%")
+                        ),
+                    conditionalPanel(
+                        condition = "input.data == 'Input Mandiri'",
+                        plotOutput("plot2", click = "plot_click"),
+                        actionButton("rem_point", "Batalkan Titik Terakhir")
+                        ),
                       
-                      #tabel
-                      tableOutput(outputId = "table"),
+                    # -- tabel
+                    tableOutput(outputId = "table"),
+                    conditionalPanel(
+                        condition = "(input.show_sum % 2) == 1",
+                        tableOutput(outputId = "summary")
+                        ),
+                    conditionalPanel(
+                        condition = "input.show_res == 'Plot Tebaran'",
+                        plotlyOutput(outputId = "resplot", width = "100%", height = "100%")
+                        ),
+                    conditionalPanel(
+                        condition = "input.show_res == 'Histogram'",
+                        plotlyOutput(outputId = "histplot", width = "100%", height = "100%")
+                        )
+                    ),
+                ## ----- INFORMASI
+                tabPanel(
+                    title = "Informasi",
+                    
+                    # input mandiri
+                    conditionalPanel(
+                        condition = "input.data == 'Input Mandiri'",
+                        includeMarkdown("www/input_mandiri.md")
+                        ),
+                    # dataset acak
+                    conditionalPanel(
+                        condition = "input.data == 'Dataset Acak'",
+                        includeMarkdown("www/dataset_acak.md")
+                        ),
+                    # daataset linier
+                    conditionalPanel(
+                        condition = "input.data == 'Dataset Buatan (Linier)'",
+                        includeMarkdown("www/dataset_linier.md")
+                        ),
+                    # dataset kuadratik
+                    conditionalPanel(
+                        condition = "input.data == 'Dataset Buatan (Kuadratik)'",
+                        includeMarkdown("www/dataset_kuadratik.md")
+                        ),
+                    # dataset R - cars
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'cars' && input.data == 'Dataset Kasus R'",
+                        includeMarkdown("www/CARS.md")
+                        ),
+                    # dataset R - mtcars
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'mtcars' && input.data == 'Dataset Kasus R'",
+                        includeMarkdown("www/MTCARS.md")
+                        ),
+                    # dataset R - women
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'women' && input.data == 'Dataset Kasus R'",
+                        includeMarkdown("www/WOMEN.md")
+                        ),
+                    # dataset R - trees
+                    conditionalPanel(
+                        condition = "input.kasus_R == 'trees' && input.data == 'Dataset Kasus R'",
+                        includeMarkdown("www/TREES.md")
+                        ),
+                    # garis regresi linier
+                    conditionalPanel(
+                        condition = "input.reg == true",
+                        includeMarkdown("www/garis_regresi.md")
+                        ),
+                    # garis pemulusan
+                    conditionalPanel(
+                        condition = "input.smt == true",
+                        includeMarkdown("www/garis_pemulusan.md")
+                        ),
+                    # R
+                    conditionalPanel(
+                        condition = "input.r == true",
+                        includeMarkdown("www/korelasi.md")
+                        ),
+                    # R2
+                    conditionalPanel(
+                        condition = "input.r2 == true",
+                        includeMarkdown("www/determinasi.md")
+                        ),
+                    # Galat
+                    conditionalPanel(
+                        condition = "input.std == true || input.res == true",
+                        includeMarkdown("www/simp_galat.md")
+                        ),
+                    # standardisaso
                       conditionalPanel(
-                          condition = "(input.show_sum % 2) == 1",
-                          tableOutput(outputId = "summary")
-                      ),
-                      conditionalPanel(
-                          condition = "input.show_res == 'Plot Tebaran'",
-                          plotlyOutput(outputId = "resplot", width = "100%", height = "100%")
-                      ),
-                      conditionalPanel(
-                          condition = "input.show_res == 'Histogram'",
-                          plotlyOutput(outputId = "histplot", width = "100%", height = "100%")
-                      )
-                  ),
-                  tabPanel(
-                      # information
-                      title = "Informasi",
-                      # input mandiri
-                      conditionalPanel(
-                          condition = "input.data == 'Input Mandiri'",
-                          # textOutput("input_mandiri")
-                          includeMarkdown("www/input_mandiri.md")
-                      ),
-                      # dataset acak
-                      conditionalPanel(
-                          condition = "input.data == 'Dataset Acak'",
-                          includeMarkdown("www/dataset_acak.md")
-                      ),
-                      # Dataset Buatan (Linier)
-                      conditionalPanel(
-                          condition = "input.data == 'Dataset Buatan (Linier)'",
-                          # textOutput("dataset_linier")
-                          includeMarkdown("www/dataset_linier.md")
-                      ),
-                      # dataset kuadratik
-                      conditionalPanel(
-                          condition = "input.data == 'Dataset Buatan (Kuadratik)'",
-                          includeMarkdown("www/dataset_kuadratik.md")
-                      ),
-                      # dataset R - cars
-                      conditionalPanel(
-                          condition = "input.kasus_R == 'cars' && input.data == 'Dataset Kasus R'",
-                          includeMarkdown("www/CARS.md")
-                      ),
-                      # dataset R - mtcars
-                      conditionalPanel(
-                          condition = "input.kasus_R == 'mtcars' && input.data == 'Dataset Kasus R'",
-                          includeMarkdown("www/MTCARS.md")
-                      ),
-                      # dataset R - women
-                      conditionalPanel(
-                          condition = "input.kasus_R == 'women' && input.data == 'Dataset Kasus R'",
-                          includeMarkdown("www/WOMEN.md")
-                      ),
-                      # dataset R - trees
-                      conditionalPanel(
-                          condition = "input.kasus_R == 'trees' && input.data == 'Dataset Kasus R'",
-                          includeMarkdown("www/TREES.md")
-                      ),
-                      # garis regresi linier
-                      conditionalPanel(
-                          condition = "input.reg == true",
-                          includeMarkdown("www/garis_regresi.md")
-                      ),
-                      # garis pemulusan
-                      conditionalPanel(
-                          condition = "input.smt == true",
-                          includeMarkdown("www/garis_pemulusan.md")
-                      ),
-                      # R
-                      conditionalPanel(
-                          condition = "input.r == true",
-                          includeMarkdown("www/korelasi.md")
-                      ),
-                      # R2
-                      conditionalPanel(
-                          condition = "input.r2 == true",
-                          includeMarkdown("www/determinasi.md")
-                      ),
-                      # Galat
-                      conditionalPanel(
-                          condition = "input.std == true || input.res == true",
-                          includeMarkdown("www/simp_galat.md")
-                      ),
-                      # Standardisasi Peubah
-                      conditionalPanel(
-                          condition = "input.zscX == true || input.zscY == true",
-                          includeMarkdown("www/standardisasi.md")
-                      ),
-                      # Plot Galat
-                      conditionalPanel(
-                          condition = "input.show_res == 'Plot Tebaran'",
-                          includeMarkdown("www/visualisasi_galat.md")
-                      ),
-                      # Plot Histogram
-                      conditionalPanel(
-                          condition = "input.show_res == 'Histogram'",
-                          includeMarkdown("www/histogram_galat.md")
-                      )
-                  )
-              )
-          )
+                        condition = "input.zscX == true || input.zscY == true",
+                        includeMarkdown("www/standardisasi.md")
+                        ),
+                    # scatterplot galat
+                    conditionalPanel(
+                        condition = "input.show_res == 'Plot Tebaran'",
+                        includeMarkdown("www/visualisasi_galat.md")
+                        ),
+                    # histogram galat
+                    conditionalPanel(
+                        condition = "input.show_res == 'Histogram'",
+                        includeMarkdown("www/histogram_galat.md")
+                        )
+                    )
+                )
+            )
         )
-)
+    )
 
 
 ## ------------------------------------- SERVER -------------------------------------
@@ -219,10 +217,10 @@ server <- function(input, output, session) {
     ## -- data
     get.data <- reactive({
         switch(input$kasus_R,
-           "cars" = data.frame(x = cars$speed, y = cars$dist),
-           "women" = data.frame(x = women$height, y = women$weight),
-           "mtcars" = data.frame(x = mtcars$hp, y = mtcars$mpg),
-           "trees" = data.frame(x = trees$Height, y = trees$Girth))
+            "Jarak dan Kecepatan Mobil" = data.frame(x = cars$speed, y = cars$dist),
+            "Tinggi vs Berat Badan Wanita" = data.frame(x = women$height, y = women$weight),
+            "Bahan Bakar Mobil" = data.frame(x = mtcars$hp, y = mtcars$mpg),
+            "Pengukuran Ketebalan Pohon" = data.frame(x = trees$Height, y = trees$Girth))
     })
 
     values <- reactiveValues()
@@ -255,9 +253,7 @@ server <- function(input, output, session) {
         } else if (input$data == "Dataset Buatan (Linier)" || input$data == "Dataset Buatan (Kuadratik)") {
             generateRandomData(n = input$slider.n, type = input$data, s = input$spread, slope = input$slope)
         } else if (input$data == "Dataset Kasus R"){
-            ### -----
             get.data()
-            ### ---
         } else {
             values$DT
         }
