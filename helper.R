@@ -26,13 +26,13 @@ generateRandomData <- function(n, type, s, slope) {
 
 #### Create Regression Plot
 
-createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, show_smooth_line, show_residuals, x_lab, y_lab) {
+createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, show_smooth_line, show_residuals, x_lab, y_lab, size) {
   
   	# -- model regresi
   	lm_model <- lm(formula = paste(y_var, "~", x_var), data = data)
   
   	# -- ggplot regresi
-  	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = "black", fill = "#1ec289f0") + theme_minimal() + labs(y = y_lab, x = x_lab)
+  	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = size, stroke = 0.5, color = "black", fill = "#1ec289f0") + theme_minimal() + labs(y = y_lab, x = x_lab)
   
   	# -- ggplot regression line = T
   	if (show_reg_line) {
@@ -60,7 +60,7 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
 
 createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line, x_lab, y_lab) {
 
-	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = "black", fill = "#1ec289f0") + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
+	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = "black", fill = "#7d336df0") + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
 	
 	if (show_smooth_line) {
 		p <- p + geom_smooth(method = "loess", se = FALSE, color = "#1ba0c1", span = smoothness) 
