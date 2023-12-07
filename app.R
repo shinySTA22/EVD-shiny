@@ -4,6 +4,7 @@ library(plotly)
 library(gridlayout)
 library(bslib)
 library(MASS)
+library(broom)
 
 source('helper.R')
 
@@ -105,7 +106,7 @@ ui <- fluidPage(
                       tableOutput(outputId = "table"),
                       conditionalPanel(
                           condition = "(input.show_sum % 2) == 1",
-                          verbatimTextOutput(outputId = "summary", placeholder = FALSE)
+                          tableOutput(outputId = "summary")
                       ),
                       conditionalPanel(
                           condition = "input.show_res == 'Plot Tebaran'",
@@ -374,9 +375,11 @@ server <- function(input, output, session) {
 
     output$table <- renderTable(df())
 
-    output$summary <- renderPrint({
+    output$summary <- renderTable({
         model.lm <- lm(y~x, data = data())
-        summary(model.lm)
+        df <- glance(model.lm)[, c("r.squared", "sigma", "df", "df.residual", "statistic", "p.value", "AIC", "BIC")]
+        colnames(df) <- c("R-squared", "SSE", "df", "Residual df", "t-statistic", "p-value", "AIC", "BIC")
+        df
     })
 
 }

@@ -78,7 +78,7 @@ makeColumn <- function(col, val) {
 
 createHistogram <- function(data, var, bin, show_normal_curve) {
   if(!show_normal_curve) {
-    h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin)
+    h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin) 
   } else {
     h <- ggplot(data, aes_string(x = var)) + geom_histogram(aes(y = after_stat(density)), binwidth = bin) + stat_function(fun = dnorm, args = list(mean = mean(data[,1]), sd = sd(data[,1])), col = "red")
   }
