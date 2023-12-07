@@ -62,7 +62,8 @@ ui <- fluidPage(
               checkboxInput(inputId = "r2", label = "Koefisien Determinasi (r²)"),
               checkboxInput(inputId = "std", label = "Simpangan Baku Galat"),
               checkboxInput(inputId = "res", label = "Visualisasi Galat"),
-              checkboxInput(inputId = "zsc", label = "Standardisasi Peubah"),
+              checkboxInput(inputId = "zscX", label = "Standardisasi Peubah X"),
+              checkboxInput(inputId = "zscY", label = "Standardisasi Peubah Y"),
               actionButton(inputId = "show_sum", "Tampilkan Ringkasan"),
               h5(""),
               actionButton(inputId = "show_res", "Tampilkan Galat"),
@@ -187,7 +188,7 @@ ui <- fluidPage(
                       ),
                       # Standardisasi Peubah
                       conditionalPanel(
-                          condition = "input.zsc == true",
+                          condition = "input.zscX == true || input.zscY == true",
                           includeMarkdown("www/standardisasi.md")
                       ),
                       # Plot Galat
@@ -294,12 +295,18 @@ server <- function(input, output, session) {
                 ylab <- "Ketebalan pohon (inci)"
             }
         }
-    
-        if(input$zsc == TRUE) {
-            x <- scale(data()$x)
-            y <- scale(data()$y)
-            data2 <- data.frame(x=x, y=y)
-            ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = "X terstandardisasi", y_lab = "Y terstandardisasi"))
+
+        data2 <- data()
+        if (input$zscX == TRUE || input$zscY == TRUE) {
+            if (input$zscX == TRUE) {
+                data2$x <- scale(data2$x)
+                xlab <- "X terstandardisasi"
+            } 
+            if (input$zscY == TRUE) {
+                data2$y <- scale(data2$y)
+                ylab <- "Y terstandardisasi"
+            }
+            ggplotly(createRegressionPlot(data = data2, x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = xlab, y_lab = ylab))
         } else {
             ggplotly(createRegressionPlot(data = data(), x_var = "x", y_var = "y", smoothness = input$slider.smooth, show_reg_line = input$reg, show_smooth_line = input$smt, show_residuals = input$res, x_lab = xlab, y_lab = ylab))
         }
