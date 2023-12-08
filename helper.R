@@ -1,4 +1,13 @@
-## -------------------------------------- DATA --------------------------------------
+#### Colors Pallette
+colorPoint <- "black"
+fillResidualPoint <- "#7d336df0"
+fillDataPoint <- "#1ec289f0"
+colorSmoothLine <- "#92fb51"
+colorRegLine <- "#6262be"
+colorLineResidual <- "#e252bc"
+colorSmoothResidual <- "#1ba0c1"
+colorBarHist <- "#f48194"
+colorDensityHist <- "#00d0ff"
 
 #### Generate Random Data
 
@@ -32,23 +41,23 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
   	lm_model <- lm(formula = paste(y_var, "~", x_var), data = data)
   
   	# -- ggplot regresi
-  	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = size, stroke = 0.5, color = "black", fill = "#1ec289f0") + theme_minimal() + labs(y = y_lab, x = x_lab)
+  	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = size, stroke = 0.5, color = colorPoint, fill = fillDataPoint) + theme_minimal() + labs(y = y_lab, x = x_lab)
   
   	# -- ggplot regression line = T
   	if (show_reg_line) {
-    	p <- p + geom_smooth(method = "lm", se = FALSE, color = "#6262be", size = 1)
+    	p <- p + geom_smooth(method = "lm", se = FALSE, color = colorRegLine, size = 1)
   	}
   
   	# -- ggplot smooth line = T
   	if (show_smooth_line) {
-    	p <- p + geom_smooth(method = "loess", se = FALSE, color = "#92fb51", span = smoothness, size = 1)
+    	p <- p + geom_smooth(method = "loess", se = FALSE, color = colorSmoothLine, span = smoothness, size = 1)
   	}
   
   	# -- ggplot show residuals = T
   	if (show_residuals) {
     	residuals <- residuals(lm_model)
     	data$residuals <- residuals
-    	p <- p + geom_segment(aes(xend = data[[x_var]], yend = predict(lm_model)), color = "#e252bc")
+    	p <- p + geom_segment(aes(xend = data[[x_var]], yend = predict(lm_model)), color = colorLineResidual)
   	}
   
   	## -- konversi ke plotly
@@ -60,10 +69,10 @@ createRegressionPlot <- function(data, x_var, y_var, smoothness, show_reg_line, 
 
 createResidualPlot <- function(data, x_var, y_var, smoothness, show_smooth_line, x_lab, y_lab) {
 
-	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = "black", fill = "#7d336df0") + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
+	p <- ggplot(data, aes_string(x = x_var, y = y_var)) + geom_point(shape = 21, size = 2.5, stroke = 0.5, color = colorPoint, fill = fillResidualPoint) + theme_minimal() + geom_hline(yintercept = 0) + labs(y = y_lab, x = x_lab) 
 	
 	if (show_smooth_line) {
-		p <- p + geom_smooth(method = "loess", se = FALSE, color = "#1ba0c1", span = smoothness) 
+		p <- p + geom_smooth(method = "loess", se = FALSE, color = colorSmoothResidual, span = smoothness) 
 	}
   
   	return(p)
@@ -82,9 +91,9 @@ makeColumn <- function(col, val) {
 
 createHistogram <- function(data, var, bin, show_normal_curve) {
 	if(!show_normal_curve) {
-		h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin, colour = 1, fill = "#f48194") + theme_minimal()
+		h <- ggplot(data, aes_string(x = var)) + geom_histogram(binwidth = bin, colour = 1, fill = colorBarHist) + theme_minimal()
 	} else {
-		h <- ggplot(data, aes_string(x = var)) + geom_histogram(aes(y = ..density..), binwidth = bin, colour = 1, fill = "#f48194") + geom_density(lwd = 1, colour = 4, fill = "#00d0ff", alpha = 0.6) + theme_minimal()
+		h <- ggplot(data, aes_string(x = var)) + geom_histogram(aes(y = ..density..), binwidth = bin, colour = 1, fill = colorBarHist) + geom_density(lwd = 1, colour = 4, fill = colorDensityHist, alpha = 0.6) + theme_minimal()
 	}
 		
 	return(h)
