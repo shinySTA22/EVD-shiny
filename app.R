@@ -79,7 +79,7 @@ ui <- fluidPage(
                 conditionalPanel(
                     condition = "input.show_res == 'Histogram'",
                     sliderInput(inputId = "bin", "Tentukan Lebar Bin", min = 0.1, max = 10, step = 0.1, value = 5),
-                    checkboxInput(inputId = "curve", "Tampilkan Kurva Normal")
+                    checkboxInput(inputId = "curve", "Tampilkan Kurva Kepekatan Galat")
                     )
             ),
         # ---------------- MAIN
@@ -146,22 +146,22 @@ ui <- fluidPage(
                         ),
                     # dataset R - cars
                     conditionalPanel(
-                        condition = "input.kasus_R == 'cars' && input.data == 'Dataset Kasus R'",
+                        condition = "input.kasus_R == 'Jarak dan Kecepatan Mobil' && input.data == 'Dataset Kasus R'",
                         includeMarkdown("www/CARS.md")
                         ),
                     # dataset R - mtcars
                     conditionalPanel(
-                        condition = "input.kasus_R == 'mtcars' && input.data == 'Dataset Kasus R'",
+                        condition = "input.kasus_R == 'Bahan Bakar Mobil' && input.data == 'Dataset Kasus R'",
                         includeMarkdown("www/MTCARS.md")
                         ),
                     # dataset R - women
                     conditionalPanel(
-                        condition = "input.kasus_R == 'women' && input.data == 'Dataset Kasus R'",
+                        condition = "input.kasus_R == 'Tinggi vs Berat Badan Wanita' && input.data == 'Dataset Kasus R'",
                         includeMarkdown("www/WOMEN.md")
                         ),
                     # dataset R - trees
                     conditionalPanel(
-                        condition = "input.kasus_R == 'trees' && input.data == 'Dataset Kasus R'",
+                        condition = "input.kasus_R == 'Pengukuran Ketebalan Pohon' && input.data == 'Dataset Kasus R'",
                         includeMarkdown("www/TREES.md")
                         ),
                     # garis regresi linier
@@ -286,13 +286,13 @@ server <- function(input, output, session) {
             xlab <- "X / prediktor"
             ylab <- "Y / respon"
         } else {
-            if(input$kasus_R == "cars"){
+            if(input$kasus_R == "Jarak dan Kecepatan Mobil"){
                 xlab <- "Jarak tempuh (ft.)"
                 ylab <- "Kecepatan (mil/jam)"
-            } else if (input$kasus_R == "mtcars") {
+            } else if (input$kasus_R == "Bahan Bakar Mobil") {
                 xlab <- "Tenaga kuda"
                 ylab <- "Jarak tempuh bahan bakar (mil/galon)"
-            } else if (input$kasus_R == "women") {
+            } else if (input$kasus_R == "Tinggi vs Berat Badan Wanita") {
                 xlab <- "Tinggi badan (inci)"
                 ylab <- "Berat badan (pond)"
             } else {
