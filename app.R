@@ -127,82 +127,82 @@ ui <- fluidPage(
                     # input mandiri
                     conditionalPanel(
                         condition = "input.data == 'Input Mandiri'",
-                        includeMarkdown("www/input_mandiri.md")
+                        includeMarkdown("www/input_mandiri.rmd")
                         ),
                     # dataset acak
                     conditionalPanel(
                         condition = "input.data == 'Dataset Acak'",
-                        includeMarkdown("www/dataset_acak.md")
+                        includeMarkdown("www/dataset_acak.rmd")
                         ),
                     # daataset linier
                     conditionalPanel(
                         condition = "input.data == 'Dataset Buatan (Linier)'",
-                        includeMarkdown("www/dataset_linier.md")
+                        includeMarkdown("www/dataset_linier.rmd")
                         ),
                     # dataset kuadratik
                     conditionalPanel(
                         condition = "input.data == 'Dataset Buatan (Kuadratik)'",
-                        includeMarkdown("www/dataset_kuadratik.md")
+                        includeMarkdown("www/dataset_kuadratik.rmd")
                         ),
                     # dataset R - cars
                     conditionalPanel(
                         condition = "input.kasus_R == 'Jarak dan Kecepatan Mobil' && input.data == 'Dataset Kasus R'",
-                        includeMarkdown("www/CARS.md")
+                        includeMarkdown("www/CARS.rmd")
                         ),
                     # dataset R - mtcars
                     conditionalPanel(
                         condition = "input.kasus_R == 'Bahan Bakar Mobil' && input.data == 'Dataset Kasus R'",
-                        includeMarkdown("www/MTCARS.md")
+                        includeMarkdown("www/MTCARS.rmd")
                         ),
                     # dataset R - women
                     conditionalPanel(
                         condition = "input.kasus_R == 'Tinggi vs Berat Badan Wanita' && input.data == 'Dataset Kasus R'",
-                        includeMarkdown("www/WOMEN.md")
+                        includeMarkdown("www/WOMEN.rmd")
                         ),
                     # dataset R - trees
                     conditionalPanel(
                         condition = "input.kasus_R == 'Pengukuran Ketebalan Pohon' && input.data == 'Dataset Kasus R'",
-                        includeMarkdown("www/TREES.md")
+                        includeMarkdown("www/TREES.rmd")
                         ),
                     # garis regresi linier
                     conditionalPanel(
                         condition = "input.reg == true",
-                        includeMarkdown("www/garis_regresi.md")
+                        includeMarkdown("www/garis_regresi.rmd")
                         ),
                     # garis pemulusan
                     conditionalPanel(
                         condition = "input.smt == true",
-                        includeMarkdown("www/garis_pemulusan.md")
+                        includeMarkdown("www/garis_pemulusan.rmd")
                         ),
                     # R
                     conditionalPanel(
                         condition = "input.r == true",
-                        includeMarkdown("www/korelasi.md")
+                        includeMarkdown("www/korelasi.rmd")
                         ),
                     # R2
                     conditionalPanel(
                         condition = "input.r2 == true",
-                        includeMarkdown("www/determinasi.md")
+                        includeMarkdown("www/determinasi.rmd")
                         ),
                     # Galat
                     conditionalPanel(
                         condition = "input.std == true || input.res == true",
-                        includeMarkdown("www/simp_galat.md")
+                        includeMarkdown("www/simp_galat.rmd")
                         ),
                     # standardisaso
                       conditionalPanel(
                         condition = "input.zscX == true || input.zscY == true",
-                        includeMarkdown("www/standardisasi.md")
+                        includeMarkdown("www/standardisasi.rmd")
                         ),
                     # scatterplot galat
                     conditionalPanel(
                         condition = "input.show_res == 'Plot Tebaran'",
-                        includeMarkdown("www/visualisasi_galat.md")
+                        includeMarkdown("www/visualisasi_galat.rmd")
                         ),
                     # histogram galat
                     conditionalPanel(
                         condition = "input.show_res == 'Histogram'",
-                        includeMarkdown("www/histogram_galat.md")
+                        includeMarkdown("www/histogram_galat.rmd")
                         )
                     )
                 )
