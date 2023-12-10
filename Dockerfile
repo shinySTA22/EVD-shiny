@@ -3,7 +3,6 @@ RUN R -e 'install.packages(c(\
                 "shiny", \
                 "ggplot2", \
                 "plotly", \
-                "gridlayout", \
                 "bslib", \
                 "MASS", \
                 "broom"))'
