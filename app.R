@@ -1,7 +1,7 @@
 library(shiny)
 library(ggplot2)
 library(plotly)
-library(gridlayout)
+# library(gridlayout)
 library(bslib)
 library(MASS)
 library(broom)
@@ -35,7 +35,7 @@ ui <- fluidPage(
             conditionalPanel(
                 condition = "input.data == 'Dataset Buatan (Linier)' || input.data == 'Dataset Buatan (Kuadratik)'",
                 sliderInput(inputId = "slope", label = "Tentukan Kemiringan/Slope", min = -5, max = 5, value = 0, step = 0.05),
-                radioButtons(inputId = "spread", label = "Sebaran data", choices = c("kecil", "sedang", "besar"))
+                radioButtons(inputId = "spread", label = "Sebaran galat pada data", choices = c("kecil", "sedang", "besar"))
                 ),
             # ----- Dataset dari R
             conditionalPanel(
