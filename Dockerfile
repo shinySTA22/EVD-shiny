@@ -3,7 +3,7 @@ RUN R -e 'install.packages(c(\
                 "shiny", \
                 "ggplot2", \
                 "plotly", \
-                "rmarkdown", \
+                "markdown", \
                 "bslib", \
                 "MASS", \
                 "broom"))'
